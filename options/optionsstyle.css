@@ -1,0 +1,201 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "OpenSans", Arial, sans-serif;
+    background-color: #d1d1d1;
+}
+
+#newTabSettings {
+    background-color: white;
+    border: 1px solid rgb(184, 184, 184);
+    border-radius: 3px;
+    box-shadow: 0 3px 6px rgba(44, 44, 44, 0.23);
+    padding: 1.5rem;
+    max-width: 768px;
+    margin: 0 auto;
+}
+
+#bgImgPreview {
+    height: 200px;
+    width: auto;
+}
+
+#uploadImage { padding-top: 10px; }
+
+#bookmarkTable {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#bookmarkTableBody tr:hover { background-color:#f5f5f5; }
+
+#bookmarkTable td, th {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid rgb(112, 112, 112);
+}
+
+.nameColumn { min-width: 150px; }
+
+.urlColumn { min-width: 250px; }
+
+.nameColumn input, .urlColumn input { width: 100%; }
+
+.iconColumn { position: relative; }
+
+.iconImg { 
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    margin-right: 25px;
+}
+
+.iconOverlay {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    border: 1px solid black;
+    left: 28px;
+    top: 22px;
+    cursor: pointer;
+    text-align: center;
+    background-color: white;
+}
+
+#newBookmarkBtn { float: right; }
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modalContent {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 15px;
+    border: 1px solid #888;
+    width: 600px;
+}
+
+.modalBody { overflow: auto; }
+
+.tab {
+    overflow: hidden;
+    margin-bottom: 15px;
+    border-bottom: solid 1px grey;
+    padding-bottom: 7px;
+}
+
+.tab button {
+    font-size: 1.5em;
+    float: left;
+    border: none;
+    background-color: none;
+    cursor: pointer;
+    transition: 0.3s;
+    padding-left: 0;
+    padding-right: 30px;
+}
+
+.tab button:focus { outline: none; }
+
+.tab button.active {
+    font-weight: 400;
+    text-decoration-line: underline;
+}
+
+.tabcontent {
+    display: none;
+    animation: fadeEffect 1s;
+}
+
+@keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+#iconLibraryContainer {
+    height: 350px;
+    border: solid 1px rgb(194, 192, 192);
+    border-radius: 3px;
+    overflow: auto;
+    margin-bottom: 10px;
+}
+
+.libraryImage {
+    width: 25%;
+    float: left;
+    padding: 8px;
+}
+
+.libraryImage:hover {
+    filter: brightness(70%);
+}
+
+.selectedIcon {
+    border: solid 2px grey;
+    border-radius: 4px;
+    filter: brightness(70%);
+}
+
+.modalColumn {
+    width: 50%;
+    float: left;
+}
+
+.modalFooter {
+    width: 100%;
+    height: 25px;
+}
+
+.modalFooter button {
+    float: right;
+    margin: 5px;
+}
+
+#modalClose {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+#modalClose:hover,
+#modalClose:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#iconPreviewContainer {
+    height:100px;
+    position: relative;
+}
+
+#modalIconPreview {
+    width: 100px;
+    height: 100px;
+    border-radius: 50px;
+    margin-left: 25px;
+    position: absolute;
+    z-index: 10;
+}
+
+#modalIconBackground {
+    width: 100px;
+    height: 100px;
+    z-index: 5;
+    position: absolute;
+    margin-left: 25px;
+    opacity: .3;
+}

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <title>New Tab Options</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="optionsstyle.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div id="newTabSettings">
+
+      <h3>UI</h3>
+      <br>
+      <input type="checkbox" name="showBookmarkNames" id="showBookmarkNames" value="showBookmarkNames" />
+      <label for="showBookmarkNames">Always show bookmark names</label>
+      <br><br>
+
+      <h3>Background Image</h3>
+      <br>
+      <img id="bgImgPreview" src="" alt="image preview" />
+      <br>
+      <input id="uploadImage" type="file" accept="image/*" />
+      <br><br>
+      <button id="restoreButton">Restore Default Background</button>
+      <br>
+      <div id="imgUploadStatus"></div>
+      <br><br>
+
+      <h3>Bookmarks</h3>
+      <table id="bookmarkTable">
+        <thead><tr><th>Name</th><th>URL</th><th>ICON</th><th></th><th></th></tr></thead>
+        <tbody id="bookmarkTableBody"></tbody>
+      </table>
+
+      <br>
+      <button id="newBookmarkBtn">+ New Bookmark</button>
+      <br>
+    </div>
+
+    <div id="iconModal" class="modal">
+      <div class="modalContent">
+        <span id="modalClose">&times;</span>
+
+        <!--  MODAL BODY  -->
+        <div class="modalBody">
+          <div class="tab">
+            <button class="tablinks">Library</button>
+            <button class="tablinks">Upload</button>
+          </div>
+
+          <div id="library" class="tabcontent">
+            <div id="iconLibraryContainer"></div>
+          </div>
+
+          <div id="upload" class="tabcontent">
+            <div class="modalColumn">
+              <div><b>Upload new image</b></div><br>
+              <div><input id="uploadIcon" type="file" accept="image/*" /></div><br><br>
+              <div id="iconPreviewContainer"><img id="modalIconPreview" /><img id="modalIconBackground" /></div>
+            </div>
+            <div class="modalColumn">
+              <div><b>Recommended image format:</b></div>
+              <ul>
+                <li>Square dimensions</li>
+                <li>Between 100 and 300 pixels</li>
+                <li>Logo placed in the center</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <!--  MODAL FOOTER  -->
+        <div class="modalFooter">
+            <button id="modalSave">Choose</button>
+            <button id="modalCancel">Cancel</button>
+          </div>
+      </div>
+      
+  </div>
+
+  </body>
+  <script src="optionsscript.js"></script>
+</html>
