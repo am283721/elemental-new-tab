@@ -8,12 +8,14 @@
   <body>
     <div id="newTabSettings">
 
+      <!-- UI SECTION -->
       <h3>UI</h3>
       <br>
       <input type="checkbox" name="showBookmarkNames" id="showBookmarkNames" value="showBookmarkNames" />
       <label for="showBookmarkNames">Always show bookmark names</label>
       <br><br>
 
+      <!-- BACKGROUND IMAGE SECTION-->
       <h3>Background Image</h3>
       <br>
       <img id="bgImgPreview" src="" alt="image preview" />
@@ -25,6 +27,7 @@
       <div id="imgUploadStatus"></div>
       <br><br>
 
+      <!-- BOOKMARKS SECTION -->
       <h3>Bookmarks</h3>
       <table id="bookmarkTable">
         <thead><tr><th>Name</th><th>URL</th><th>ICON</th><th></th><th></th></tr></thead>
@@ -36,6 +39,7 @@
       <br>
     </div>
 
+    <!-- MODAL SECTION -->
     <div id="iconModal" class="modal">
       <div class="modalContent">
         <span id="modalClose">&times;</span>
@@ -43,8 +47,26 @@
         <!--  MODAL BODY  -->
         <div class="modalBody">
           <div class="tab">
+              <button class="tablinks">Scan</button>
             <button class="tablinks">Library</button>
             <button class="tablinks">Upload</button>
+          </div>
+
+          <div id="scan" class="tabcontent">
+            <div class="modalColumn">
+              <div><b>Scan site for icon</b></div><br>
+              <div>We can attempt to search the given site for an icon. Multiple versions of the icon 
+                might exist at different resolutions. Or there might not be any icons defined.</div><br><br>
+              <div>Base URL of website (ex: https://google.com):</div>
+              <div><input id="scanIconInput" /></div>
+              <div><button id="scanIconBtn">Scan</button></div>
+              <br>
+              <div id="scanMessage"></div>
+            </div>
+            <div class="modalColumn">
+              <div><b>Results:</b></div><br>
+              <div id="scanResultsContainer"></div>
+            </div>
           </div>
 
           <div id="library" class="tabcontent">
@@ -54,23 +76,29 @@
           <div id="upload" class="tabcontent">
             <div class="modalColumn">
               <div><b>Upload new image</b></div><br>
-              <div><input id="uploadIcon" type="file" accept="image/*" /></div><br><br>
-              <div id="iconPreviewContainer"><img id="modalIconPreview" /><img id="modalIconBackground" /></div>
-            </div>
-            <div class="modalColumn">
-              <div><b>Recommended image format:</b></div>
+              <div>Recommended image format:</div>
               <ul>
                 <li>Square dimensions</li>
                 <li>Between 100 and 300 pixels</li>
                 <li>Logo placed in the center</li>
               </ul>
+              <br>
+              <div><input id="uploadIcon" type="file" accept="image/*" /></div><br><br>
+            </div>
+            <div class="modalColumn">
+              <div><b>Preview:</b></div><br>
+              <div id="iconPreviewContainer">
+                <img id="modalIconPreview" />
+                <img id="modalIconBackground" />
+              </div>
             </div>
           </div>
         </div>
         <!--  MODAL FOOTER  -->
         <div class="modalFooter">
-            <button id="modalSave">Choose</button>
-            <button id="modalCancel">Cancel</button>
+          <div id="modalMessage"></div>
+          <button id="modalSave">Choose</button>
+          <button id="modalCancel">Cancel</button>
           </div>
       </div>
       
@@ -78,4 +106,5 @@
 
   </body>
   <script src="optionsscript.js"></script>
+  <script src="faviconscanner.js"></script>
 </html>
