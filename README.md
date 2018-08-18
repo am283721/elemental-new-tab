@@ -9,4 +9,8 @@ Options page for updating background and editing/adding/deleting bookmarks.
 
 Small library of icons for popular sites. Also an option to upload your own images.
 
-![Screenshot of new tab page](new_icon_screenshot.jpg?raw=true "Icon Library Screenshot")
+![Screenshot of options modal](new_icon_screenshot.jpg?raw=true "Icon Library Screenshot")
+
+Ver 0.2 adds functionality to scan a remote site for favicons to use as bookmark icon
+
+![Screenshot of scan icon functionality](scan_icon_screenshot.jpg?raw=true "Scan Icons Screenshot")

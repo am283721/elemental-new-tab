@@ -57,7 +57,7 @@ body {
     width: 20px;
     height: 20px;
     border-radius: 10px;
-    border: 1px solid black;
+    border: 1px solid rgba(110, 110, 110, 0.479);
     left: 28px;
     top: 22px;
     cursor: pointer;
@@ -84,10 +84,13 @@ body {
     margin: 15% auto;
     padding: 15px;
     border: 1px solid #888;
+    border-radius: 3px;
     width: 600px;
 }
 
-.modalBody { overflow: auto; }
+.modalBody { 
+    overflow: auto;
+    min-height: 300px; }
 
 .tab {
     overflow: hidden;
@@ -102,7 +105,6 @@ body {
     border: none;
     background-color: none;
     cursor: pointer;
-    transition: 0.3s;
     padding-left: 0;
     padding-right: 30px;
 }
@@ -110,8 +112,7 @@ body {
 .tab button:focus { outline: none; }
 
 .tab button.active {
-    font-weight: 400;
-    text-decoration-line: underline;
+    font-weight: 600;
 }
 
 .tabcontent {
@@ -124,13 +125,37 @@ body {
     to {opacity: 1;}
 }
 
-#iconLibraryContainer {
+#scanIconInput {
+    width: 80%;
+    margin: 5px 0;
+    float: left;
+}
+
+#scanIconBtn {
+    margin-top: 6px;
+    margin-left: 2px;
+}
+
+#scanMessage {
+    float: left;
+}
+
+.scanIcon {
+    width: 50%;
+    float: left;
+    padding: 6px;
+}
+
+#iconLibraryContainer,
+#scanResultsContainer {
     height: 350px;
     border: solid 1px rgb(194, 192, 192);
     border-radius: 3px;
     overflow: auto;
     margin-bottom: 10px;
 }
+
+#scanResultsContainer { height: 200px; }
 
 .libraryImage {
     width: 25%;
@@ -151,6 +176,8 @@ body {
 .modalColumn {
     width: 50%;
     float: left;
+    height: 225px;
+    padding-left: 10px;
 }
 
 .modalFooter {
@@ -160,6 +187,12 @@ body {
 
 .modalFooter button {
     float: right;
+    margin: 5px;
+}
+
+#modalMessage {
+    float: left;
+    color: red;
     margin: 5px;
 }
 
