@@ -4,6 +4,26 @@ body {
     background: no-repeat center top fixed;
 }
 
+#optionsBtn {
+    opacity: 0.4;
+    position: fixed;
+    bottom: 5px;
+    left: 5px;
+    width: 20px;
+    height: 20px;
+    /* color: white; */
+    cursor: pointer;
+}
+
+#optionsBtn:hover {
+    opacity: 1;
+}
+
+#optionsBtn svg {
+    width: 100%;
+    height: 100%;
+}
+
 #linksContainer {
     width: 100%;
     min-height: 160px;
@@ -14,25 +34,25 @@ body {
 }
 
 .link {
-    flex: 1;
     height: 100%;
-    align-self: center;
-    max-width: 95px;
-    padding: 0 15px;
+    text-align: center;
+    width: 140px;
     transition: all .4s;
     cursor: pointer;
+    margin-bottom: 20px;
 }
 
-.link img {
-    width: 100%;
+.linkImg {
+    width: 60%;
     position: relative;
     border-radius: 90px;
     box-shadow: 0 3px 6px rgba(0,0,0,.23);
     transition: all .3s;
+    margin: 0 20%;
 }
 
 .linkText {
-    display: block;
+    display: inline-block;
     opacity: 0;
     color: white;
     position: relative;
@@ -46,9 +66,8 @@ body {
     transition: all .3s;
 }
 
-.link:hover {
+.link:hover * {
     transform: translateY(-20px);
-    transform: scaleY(20px);
 }
 
 .link:hover img {
