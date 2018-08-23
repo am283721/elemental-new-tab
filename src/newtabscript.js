@@ -1,6 +1,14 @@
 chrome.storage.local.get({ 'backgroundImage':'', 'sites':[], 'showBookmarkNames':false }, function(data){
     // Set background image
     document.body.style.backgroundImage = "url('" + data.backgroundImage + "')";
+
+    document.getElementById('optionsBtn').addEventListener('click', function(){
+        if (chrome.runtime.openOptionsPage) {
+            chrome.runtime.openOptionsPage();
+          } else {
+            window.open(chrome.runtime.getURL('options.html'));
+          }
+    });
    
     // Load bookmarks
     for (let i = 0; i < data.sites.length; i++) {
@@ -9,6 +17,7 @@ chrome.storage.local.get({ 'backgroundImage':'', 'sites':[], 'showBookmarkNames'
         let linkText = data.sites[i].name;
         newImage.src = data.sites[i].imgUrl;
         newImage.id = 'link-' + i;
+        newImage.className = 'linkImg';
         let newDiv = document.createElement('div');
         newDiv.className = 'link';
         newDiv.addEventListener('click', () =>

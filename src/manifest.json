@@ -1,7 +1,7 @@
 {
   "name": "Elemental New Tab",
   "description": "A Chrome extension that overrides the default new tab page with a minimalistic design of customizable links and background image.",
-  "version": "0.2",
+  "version": "0.3",
   "chrome_url_overrides": {
     "newtab": "newtab.html"
   },
