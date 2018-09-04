@@ -93,7 +93,8 @@ function buildRow(name, url, iconSrc, rowId) {
 
   nameCol.innerText = name;
   nameCol.className = 'nameColumn';
-  urlCol.innerText = url;
+  urlCol.title = url;
+  url.length > 60 ? urlCol.innerText = url.substring(0,56) + '...' : urlCol.innerText = url;
   urlCol.className = 'urlColumn';
   iconCol.className = 'iconColumn';
   iconImg.src = iconSrc;
@@ -242,7 +243,7 @@ function editRow(currentRow) {
 
   // Convert url cell into input and pre-fill with existing value
   let urlCell = currentRow.cells[COLUMN.URL];
-  let bookmarkUrl = urlCell.innerText;
+  let bookmarkUrl = urlCell.title;
   urlCell.innerText = '';
   let urlInput = document.createElement('input');
   urlInput.value = bookmarkUrl;
@@ -267,7 +268,8 @@ function saveRow(currentRow, bookmarkId) {
   let urlCell = currentRow.cells[COLUMN.URL];
   let bookmarkUrl = urlCell.childNodes[0].value;
   urlCell.removeChild(urlCell.childNodes[0]);
-  urlCell.innerText = bookmarkUrl;
+  urlCell.title = bookmarkUrl;
+  bookmarkUrl.length > 60 ? urlCell.innerText = bookmarkUrl.substring(0,56) + '...' : urlCell.innerText = bookmarkUrl;
 
   let icons = currentRow.cells[COLUMN.ICON].getElementsByTagName('img');
   let iconSrc = icons[0].src;
