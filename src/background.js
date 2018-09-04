@@ -7,12 +7,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
             { name: 'Reddit', url:'https://www.reddit.com/', imgUrl:'reddit.jpg', id:1 },
             { name: 'YouTube', url:'https://www.youtube.com/', imgUrl:'youtube.jpg', id:2 },
             { name: 'Inbox', url:'https://inbox.google.com/', imgUrl:'inbox.jpg', id:3 },
-            { name: 'News', url:'https://news.google.com/', imgUrl:'news.jpg', id:4 },
-            { name: 'Robinhood', url:'https://robinhood.com/', imgUrl:'robinhood.jpg', id:5 },
-            { name: 'Duolingo', url:'https://www.duolingo.com/', imgUrl:'duolingo.jpg', id:6 },
-            { name: 'Photos', url:'https://photos.google.com/', imgUrl:'photos.jpg', id:7 }
+            { name: 'News', url:'https://news.google.com/', imgUrl:'news.jpg', id:4 }
         ];
-
         var icons = 
         [
             { name: 'Default', imgUrl: 'default.jpg' },
@@ -37,95 +33,71 @@ chrome.runtime.onInstalled.addListener(function(details) {
             { name: 'Yahoo', imgUrl: 'yahoo.jpg' },
             { name: 'YouTube', imgUrl: 'youtube.jpg' }
         ];
-
         var backgroundImage = '/images/bg.jpg';
         var editImage = '/images/edit.jpg';
 
-        // TODO: Combine the following 2 or 4 methods into one. I was feeling lazy
-        // Also maybe add logic so that images contained in both the bookmarks and
-        // the icons list aren't read twice.
-        // Recursive function to read each bookmark image url and replace with blob file
-        function readBookmarkImages(currentBookmark) {
-            if(currentBookmark === sites.length){
-                readIconImages(0);
-            } else {
-                let imgUrl = '/images/' + sites[currentBookmark].imgUrl;
-                let request = new XMLHttpRequest();
-                request.open('GET', imgUrl, true);
-                request.responseType = 'blob';
-                request.addEventListener('load', function() {
-                    let reader  = new FileReader();
-                    reader.addEventListener("load", function () {
-                        sites[currentBookmark].imgUrl = reader.result;
-                        readBookmarkImages(currentBookmark + 1);
-                    }, false);
-                
-                    reader.readAsDataURL(request.response);
+        function readImage(url, callback){
+            function onError(){ callback(''); }
+            function onXhrGet(status, response){
+                function onReaderLoad(result){ callback(result); }
+                if(status == 200){
+                    readFile(response, onReaderLoad, onError);
+                } else { onError(); }
+            }
+            getViaXhr(url, 'blob', onXhrGet);
+        }
+
+        // Recursive function to process an array of images. Objects in array
+        // must contain an 'imgUrl' variable containing the name of the image
+        function readImageArray(images, currentIndex, endCallback) {
+            if(currentIndex === images.length){
+                endCallback();
+            } else{
+                let imgUrl = '/images/' + images[currentIndex].imgUrl;
+                readImage(imgUrl, function(result){
+                    if(result.length){
+                        images[currentIndex].imgUrl = result;
+                        readImageArray(images, currentIndex + 1, endCallback);
+                    } else{
+                        images.splice(currentIndex, 1);
+                        readImageArray(images, currentIndex, endCallback);
+                    }
                 });
-                request.send();
             }
         }
 
-        // Recursive function to read each icon and replace with blob file
-        function readIconImages(currentIcon) {
-            if(currentIcon === icons.length){
-                readBackgroundImage();
-            } else {
-                let imgUrl = '/images/' + icons[currentIcon].imgUrl;
-                let request = new XMLHttpRequest();
-                request.open('GET', imgUrl, true);
-                request.responseType = 'blob';
-                request.addEventListener('load', function() {
-                    let reader  = new FileReader();
-                    reader.addEventListener("load", function () {
-                        icons[currentIcon].imgUrl = reader.result;
-                        readIconImages(currentIcon + 1);
-                    }, false);
-                
-                    reader.readAsDataURL(request.response);
-                });
-                request.send();
-            }
-        }
-
-        function readBackgroundImage(){
-            let bgImgUrl = backgroundImage;
-            let request = new XMLHttpRequest();
-            request.open('GET', bgImgUrl, true);
-            request.responseType = 'blob';
-            request.addEventListener('load', function() {
-                let reader  = new FileReader();
-                reader.addEventListener("load", function () {
-                    backgroundImage = reader.result;
-                    readEditImage();
-                }, false);
-            
-                reader.readAsDataURL(request.response);
-            });
+        function getViaXhr(url, responseType, onLoad, onError){
+            var request = new XMLHttpRequest();
+            request.responseType = responseType;
+            request.open('GET', url, true);
+            request.addEventListener("error", onError);
+            request.addEventListener("load", function(){ onLoad(request.status, request.response) });
+            request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
             request.send();
         }
 
-        function readEditImage(){
-            let editImgUrl = editImage;
-            let request = new XMLHttpRequest();
-            request.open('GET', editImgUrl, true);
-            request.responseType = 'blob';
-            request.addEventListener('load', function() {
-                let reader  = new FileReader();
-                reader.addEventListener("load", function () {
-                    editImage = reader.result;
-                    saveSettings();
-                }, false);
-            
-                reader.readAsDataURL(request.response);
-            });
-            request.send();
+        function readFile(file, onLoad, onError){
+            var reader  = new FileReader();
+            reader.addEventListener("error", onError);
+            reader.addEventListener("load", function(){ onLoad(reader.result) });
+            reader.readAsDataURL(file);
         }
 
         function saveSettings(){
             chrome.storage.local.set({ 'sites':sites, 'icons':icons, 'backgroundImage':backgroundImage, 'editImage':editImage, 'showBookmarkNames':false }, function(){});
         }
 
-        readBookmarkImages(0);
+        // Potentially convoluted series of asychronous calls to load data and save it in chrome storage
+        readImageArray(sites, 0, function(){ // Load sites
+            readImageArray(icons, 0, function(){ // Load icons
+                readImage(backgroundImage, function(result){ // Load background image
+                    backgroundImage = result;
+                    readImage(editImage, function(result){ // Load edit image then save settings
+                        editImage = result;
+                        saveSettings();
+                    });
+                })
+            })
+        });
     };
   });
