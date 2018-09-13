@@ -4,10 +4,9 @@ chrome.runtime.onInstalled.addListener(function(details) {
         var sites =
         [
             { name: 'Facebook', url:'https://www.facebook.com/', imgUrl:'facebook.jpg', id:0 },
-            { name: 'Reddit', url:'https://www.reddit.com/', imgUrl:'reddit.jpg', id:1 },
             { name: 'YouTube', url:'https://www.youtube.com/', imgUrl:'youtube.jpg', id:2 },
-            { name: 'Inbox', url:'https://inbox.google.com/', imgUrl:'inbox.jpg', id:3 },
-            { name: 'News', url:'https://news.google.com/', imgUrl:'news.jpg', id:4 }
+            { name: 'Instagram', url:'https://instagram.com/', imgUrl:'instagram.jpg', id:3 },
+            { name: 'Twitter', url:'https://twitter.com/', imgUrl:'twitter.jpg', id:4 }
         ];
         var icons = 
         [

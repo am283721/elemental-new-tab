@@ -31,7 +31,32 @@ function onPageLoad(){
   showNamesCheckbox.onchange = function(){
     chrome.storage.local.set({'showBookmarkNames':showNamesCheckbox.checked });
   }
+  checkPermissions();
   loadDataFromStorage();
+}
+
+/*
+ *     checkPermissions Function
+ */
+function checkPermissions(){
+  var scanDiv = document.getElementById('scanDiv');
+  var urlPermissionDiv = document.getElementById('urlPermissionDiv');
+  var getPermissionBtn = document.getElementById('getUrlPermission');
+  chrome.permissions.contains({ origins: ['<all_urls>']}, function(hasPermission) {
+    if (hasPermission) {
+      urlPermissionDiv.style.display = 'none';
+    } else {
+      scanDiv.style.display = 'none';
+      getPermissionBtn.addEventListener('click', function() {
+        chrome.permissions.request({ origins: ['<all_urls>'] }, function(granted) {
+          if (granted) {
+            scanDiv.style.display = 'block';
+            urlPermissionDiv.style.display = 'none';
+          }
+        });
+      });
+    }
+  });
 }
 
 /*

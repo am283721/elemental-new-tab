@@ -57,11 +57,16 @@
               <div><b>Scan site for icon</b></div><br>
               <div>We can attempt to search the given site for an icon. Multiple versions of the icon 
                 might exist at different resolutions. Or there might not be any icons defined.</div><br><br>
-              <div>Base URL of website (ex: https://google.com):</div>
-              <div><input id="scanIconInput" /></div>
-              <div><button id="scanIconBtn">Scan</button></div>
-              <br>
-              <div id="scanMessage"></div>
+              <div id="scanDiv">
+                <div>Base URL of website (ex: https://google.com):</div>
+                <div><input id="scanIconInput" /></div>
+                <div><button id="scanIconBtn">Scan</button></div>
+                <br>
+                <div id="scanMessage"></div>
+              </div>
+              <div id="urlPermissionDiv">
+                <button id="getUrlPermission">Allow extension to scan websites</button>
+              </div>
             </div>
             <div class="modalColumn">
               <div><b>Results:</b></div><br>
