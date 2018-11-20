@@ -27,16 +27,15 @@ body {
 #linksContainer {
     width: 100%;
     min-height: 160px;
-    margin-top: 20%;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-evenly;
 }
 
 .link {
-    height: 100%;
     text-align: center;
     width: 140px;
+    height: 140px;
     transition: all .4s;
     cursor: pointer;
     margin-bottom: 20px;
@@ -44,9 +43,10 @@ body {
 
 .linkImg {
     width: 60%;
+    height: 60%;
     position: relative;
     border-radius: 90px;
-    box-shadow: 0 3px 6px rgba(0,0,0,.23);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, .23);
     transition: all .3s;
     margin: 0 20%;
 }
@@ -83,11 +83,11 @@ body {
         min-width: calc(12%);
         margin-top: 50px;
     }
-  }
+}
 
-  @media (max-width: 768px) {
+@media (max-width: 768px) {
     .link {
         min-width: calc(15%);
         margin-top: 25px;
     }
-  }
+}

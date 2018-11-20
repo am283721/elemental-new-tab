@@ -1,61 +1,159 @@
 <!DOCTYPE html>
 <html lang="en-US">
-  <head>
-    <title>New Tab Options</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="optionsstyle.css" rel="stylesheet" type="text/css">
-  </head>
-  <body>
-    <div id="newTabSettings">
 
-      <!-- UI SECTION -->
-      <h3>UI</h3>
-      <br>
-      <input type="checkbox" name="showBookmarkNames" id="showBookmarkNames" value="showBookmarkNames" />
-      <label for="showBookmarkNames">Always show bookmark names</label>
-      <br><br>
+<head>
+  <title>New Tab Options</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css?family=Poppins|Roboto:300" rel="stylesheet">
+  <link href="optionsstyle.css" rel="stylesheet" type="text/css">
+</head>
 
-      <!-- BACKGROUND IMAGE SECTION-->
-      <h3>Background Image</h3>
-      <br>
-      <img id="bgImgPreview" src="" alt="image preview" />
-      <br>
+<body>
+  <div id="newTabSettings" class="modal-shadow">
+
+    <!-- UI SECTION -->
+    <div class="floatSection col50">
+      <h3>Display</h3>
+      <h4>Show Bookmark Name</h4>
+      <div id="bookmarkNameButtons" class="">
+        <input type="radio" name="showBookmarkNames" value="never" id="neverShow" />
+        <label for="never">Never</label><br>
+        <input type="radio" name="showBookmarkNames" value="hover" id="showOnHover" />
+        <label for="hover">On Hover</label><br>
+        <input type="radio" name="showBookmarkNames" value="always" id="alwaysShow" />
+        <label for="always">Always</label>
+      </div>
+
+      <h4>Bookmark Position</h4>
+      <div id="bookmarkPositionButtons" class="">
+        <input type="radio" name="bookmarkPosition" value="top" id="topPosition" />
+        <label for="top">Top</label><br>
+        <input type="radio" name="bookmarkPosition" value="middle" id="middlePosition" />
+        <label for="middle">Middle</label><br>
+        <input type="radio" name="bookmarkPosition" value="bottom" id="bottomPosition" />
+        <label for="bottom">Bottom</label>
+      </div>
+
+      <h4>Upload new background</h4>
       <input id="uploadImage" type="file" accept="image/*" />
+      <!-- <br><br>
+        <button id="restoreButton">Restore</button> -->
       <br><br>
-      <button id="restoreButton">Restore Default Background</button>
-      <br>
       <div id="imgUploadStatus"></div>
-      <br><br>
+      <!--       
+        <input type="checkbox" name="showBookmarkNames" id="showBookmarkNames" value="showBookmarkNames" />
+        <label for="showBookmarkNames">Always show bookmark names</label> -->
 
-      <!-- BOOKMARKS SECTION -->
-      <h3>Bookmarks</h3>
-      <table id="bookmarkTable">
-        <thead><tr><th>Name</th><th>URL</th><th>ICON</th><th></th><th></th></tr></thead>
-        <tbody id="bookmarkTableBody"></tbody>
-      </table>
-
-      <br>
-      <button id="newBookmarkBtn">+ New Bookmark</button>
-      <br>
     </div>
 
-    <!-- MODAL SECTION -->
-    <div id="iconModal" class="modal">
-      <div class="modalContent">
-        <span id="modalClose">&times;</span>
+    <!-- PREVIEW SECTION-->
+    <div class="floatSection col50">
+      <h3>Background Preview</h3>
+      <div id="bgPreviewContainer">
+        <img id="bgImgPreview" src="" alt="image preview" />
+      </div>
+    </div>
 
-        <!--  MODAL BODY  -->
-        <div class="modalBody">
+    <!-- BOOKMARKS SECTION -->
+    <div id="bookmarkSection">
+      <h3>Bookmarks<span class="hint"> - Click to edit, drag and drop to re-order</span></h3>
+      <div id="bookmarkList">
+        <button id="newBookmarkBtn">New Bookmark</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT BOOKMARK POPUP -->
+  <div id="editBookmarkMenu" class="modal-shadow">
+    <div class="innerContent">
+      <h2 id="editMenuHeading">Edit Bookmark</h2>
+      <div class="flex bookmarkField">
+        <label for="editName">Name</label>
+        <input id="editNameInput" name="editName" value="" />
+      </div>
+      <div class="flex bookmarkField">
+        <label for="editUrl">URL</label>
+        <input id="editUrlInput" name="editUrl" value="" />
+      </div>
+      <div class="flex bookmarkField">
+        <label>Icon</label>
+        <img id="editIconPreview" src="" />
+        <button id="editIconBtn" name="icon">Edit</button>
+      </div>
+      <div id="editBookmarkButtons">
+        <button id="importBookmarkBtn" class="floatLeft" name="bookmark">Import</button>
+        <button id="deleteBookmarkBtn" class="floatLeft">Remove</button>
+        <button id="saveBookmarkBtn" class="floatRight highlightBtn">Save</button>
+        <button id="cancelEditBookmarkBtn" class="floatRight">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMPORT BOOKMARK MODAL -->
+  <!-- <div id="importBookmarkModal" class="modal modal-shadow">
+      <div class="modalContent">
+          <span id="bookmarkModalClose">&times;</span>
+          <div class="modalBody">
+            <div id="bookmarks"></div>
+          </div>
+      </div>
+      <div class="modalFooter">
+        <button id="bookmarkModalSaveBtn" class="highlightBtn">Choose</button>
+        <button id="bookmarkModalCancelBtn">Cancel</button>
+      </div>
+    </div> -->
+
+  <!-- MODAL SECTION -->
+  <div id="optionsModal" class="modal modal-shadow">
+    <div class="modalContent">
+      <span id="modalClose">&times;</span>
+
+      <!--  MODAL BODY  -->
+      <div class="modalBody">
+        <div class="bookmarkModalContent">
           <div class="tab">
-              <button class="tablinks">Scan</button>
-            <button class="tablinks">Library</button>
-            <button class="tablinks">Upload</button>
+            <button class="tablinks" id="topSitesTabBtn" data-content="topSites">Top Sites</button>
+            <button class="tablinks" id="allBookmarksTabBtn" data-content="allChromeBookmarks">All Bookmarks</button>
+            <button class="tablinks" id="recentlyAddedTabBtn" data-content="recentlyAddedBookmarks">Recently Added</button>
+          </div>
+
+          <div id="topSites" class="tabcontent">
+            <ul id="topSitesList" class="singleLevelList"></ul>
+          </div>
+
+          <div id="allChromeBookmarks" class="tabcontent">
+            <div id="searchBookmarksContainer" class="searchContainer">
+              <label for="searchBookmarksInput" class="searchLabel">Search</label>
+              <input id="searchBookmarksInput" class="searchInput" />
+            </div>
+            <div id="chromeBookmarks"></div>
+          </div>
+
+          <div id="recentlyAddedBookmarks" class="tabcontent">
+            <ul id="recentBookmarksList" class="singleLevelList"></ul>
+          </div>
+
+        </div>
+
+        <div class="iconModalContent">
+          <div class="tab">
+            <button class="tablinks" id="libraryTabBtn" data-content="library">Library</button>
+            <button class="tablinks" id="scanTabBtn" data-content="scan">Scan</button>
+            <button class="tablinks" id="uploadTabBtn" data-content="upload">Upload</button>
+          </div>
+
+          <div id="library" class="tabcontent">
+            <div id="searchIconContainer" class="searchContainer">
+              <label for="searchIconInput" class="searchLabel">Search</label>
+              <input id="searchIconInput" class="searchInput" />
+            </div>
+            <div id="iconLibraryContainer"></div>
           </div>
 
           <div id="scan" class="tabcontent">
             <div class="modalColumn">
               <div><b>Scan site for icon</b></div><br>
-              <div>We can attempt to search the given site for an icon. Multiple versions of the icon 
+              <div>We can attempt to search the given site for an icon. Multiple versions of the icon
                 might exist at different resolutions. Or there might not be any icons defined.</div><br><br>
               <div id="scanDiv">
                 <div>Base URL of website (ex: https://google.com):</div>
@@ -74,18 +172,14 @@
             </div>
           </div>
 
-          <div id="library" class="tabcontent">
-            <div id="iconLibraryContainer"></div>
-          </div>
-
           <div id="upload" class="tabcontent">
             <div class="modalColumn">
-              <div><b>Upload new image</b></div><br>
-              <div>Recommended image format:</div>
+              <div><b>Upload your own icon</b></div><br>
+              <div>Recommended format:</div>
               <ul>
-                <li>Square dimensions</li>
+                <li>Square</li>
                 <li>Between 100 and 300 pixels</li>
-                <li>Logo placed in the center</li>
+                <li>Logo in the center</li>
               </ul>
               <br>
               <div><input id="uploadIcon" type="file" accept="image/*" /></div><br><br>
@@ -99,17 +193,21 @@
             </div>
           </div>
         </div>
-        <!--  MODAL FOOTER  -->
-        <div class="modalFooter">
-          <div id="modalMessage"></div>
-          <button id="modalSave">Choose</button>
-          <button id="modalCancel">Cancel</button>
-          </div>
       </div>
-      
+      <!--  MODAL FOOTER  -->
+      <div class="modalFooter">
+        <div id="modalMessage"></div>
+        <button id="iconModalSaveBtn" class="highlightBtn iconModalContent">Choose</button>
+        <button id="bookmarkModalSaveBtn" class="highlightBtn bookmarkModalContent">Choose</button>
+        <button id="modalCancelBtn">Cancel</button>
+      </div>
+    </div>
+
   </div>
 
-  </body>
-  <script src="optionsscript.js"></script>
-  <script src="faviconscanner.js"></script>
+</body>
+<script src="optionsscript.js"></script>
+<script src="faviconscanner.js"></script>
+<script src="dragandsort.js"></script>
+
 </html>
