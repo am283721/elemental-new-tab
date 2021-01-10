@@ -1,6 +1,6 @@
 "use strict";
 
-var defaultIconUrl = '', currentBookmark, selectedIcon, selectedBookmark;
+let defaultIconUrl = '', currentBookmark, selectedIcon, selectedBookmark;
 const MAX_TITLE_LENGTH = 70;
 
 function $(id) { return document.getElementById(id); }
@@ -15,9 +15,9 @@ function toggle(el, toShow) {
 }
 
 function onPageLoad() {
-  addEventListeners();
   checkPermissions();
   loadDataFromStorage();
+  addEventListeners();
 }
 
 function newListener(elementID, event, func) {
@@ -40,39 +40,46 @@ function addEventListeners() {
   newListener('bookmarkModalSaveBtn', 'click', importBookmark);
   newListener('searchIconInput', 'input', function () { filterLibrary(this.value.toLowerCase()); });
   newListener('searchBookmarksInput', 'input', function () { filterBookmarks(this.value.toLowerCase()); });
-  var tabs = document.getElementsByClassName('tablinks');
-  for (let i = 0; i < tabs.length; i++) {
-    tabs[i].addEventListener('click', function () { changeTab(this); });
+  let tabs = document.getElementsByClassName('tablinks');
+
+  for (let tab of tabs) {
+    tab.addEventListener('click', () => changeTab(tab));
   }
+
+  let dropdowns = document.getElementsByClassName('setting-select');
+
+  for (let dropdown of dropdowns) {
+    newListener(dropdown.id, 'change', dropdownChange);
+  }
+
   document.addEventListener('click', function (event) {
     if (event.target.closest('#editBookmarkMenu, .draggableIcon, #newBookmarkBtn, #optionsModal')) {
       return;
     }
     hideEditMenu();
   });
-  var radioButtons = document.querySelectorAll('input[type=radio]');
-  for (let i = 0; i < radioButtons.length; i++) {
-    newListener(radioButtons[i].id, 'change', function () { radioButtonClicked(radioButtons[i]); });
+}
+
+function dropdownChange() {
+  chrome.storage.local.set({ [this.getAttribute('data-setting')]: this.value });
+
+  if (this.id === 'backgroundPositionSelect') {
+    $('bgPreviewContainer').style.backgroundPositionY = this.value;
+  }
+  else if (this.id === 'backgroundSizeSelect') {
+    $('bgPreviewContainer').style.backgroundSize = this.value;
   }
 }
 
-// Called when user changes the settings in the 'Show Bookmark Names' section or the 
-// 'Bookmark Position' section. The radio button name is set to the corresponding key
-// stored in chrome storage
-function radioButtonClicked(btn) {
-  chrome.storage.local.set({ [btn.name]: btn.value });
-}
-
-
 /*
- *     checkPermissions Function - Scanning a remote site for icons requires additional
- *     permissions. If we have them, show the scan button, if not show the get permissions
- *     button to prompt the user
- */
+*     checkPermissions Function - Scanning a remote site for icons requires additional
+*     permissions. If we have them, show the scan button, if not show the get permissions
+*     button to prompt the user
+*/
 function checkPermissions() {
-  var scanDiv = $('scanDiv');
-  var urlPermissionDiv = $('urlPermissionDiv');
-  var getPermissionBtn = $('getUrlPermission');
+  let scanDiv = $('scanDiv');
+  let urlPermissionDiv = $('urlPermissionDiv');
+  let getPermissionBtn = $('getUrlPermission');
   chrome.permissions.contains({ origins: ['<all_urls>'] }, function (hasPermission) {
     if (hasPermission) { hide(urlPermissionDiv); }
     else {
@@ -89,95 +96,87 @@ function checkPermissions() {
   });
 }
 
-/*
- *     loadDataFromStorage Function
- */
 function loadDataFromStorage() {
   chrome.storage.local.get({
-    'editImage': '', 'backgroundImage': '', 'sites': [],
-    'icons': [], 'showBookmarkNames': 'hover', 'bookmarkPosition': 'middle'
+    editImage: '', backgroundImage: '', sites: [],
+    icons: [], showBookmarkNames: 'hover', bookmarkPosition: 'middle', backgroundPosition: 'top'
   }, function (data) {
-    setBackgroundImage(data.backgroundImage);
-    var bookmarkList = $('bookmarkList');
-    var newBookmarkBtn = $('newBookmarkBtn');
-    if (data.sites.length) {
-      var bookmarkArray = [];
-      for (let i = 0; i < data.sites.length; i++) {
-        let iconImg = document.createElement('img');
-        iconImg.src = data.sites[i].imgUrl;
-        iconImg.id = data.sites[i].id;
-        iconImg.title = data.sites[i].url;
-        iconImg.name = data.sites[i].name;
-        iconImg.className = 'draggableIcon';
-        iconImg.addEventListener('click', function () { showEditMenu(this) });
-        bookmarkList.insertBefore(iconImg, newBookmarkBtn);
-        bookmarkArray.push(iconImg);
-      }
-      makeSortable(bookmarkArray);
-    }
-
-    // Find the default icon
-    var icons = data.icons;
-    for (let i = 0; i < icons.length; i++) {
-      if (icons[i].name === 'Default') {
-        defaultIconUrl = icons[i].imgUrl;
-        break;
-      }
-    }
-    // Load set of predefined icons
-    var iconLibraryContainer = $('iconLibraryContainer');
-    for (let i = 0; i < icons.length; i++) {
-      let iconElement = document.createElement('img');
-      iconElement.className = 'libraryImage';
-      iconElement.src = icons[i].imgUrl;
-      iconElement.alt = icons[i].name;
-      iconElement.onclick = function () { iconClicked(iconElement) };
-      iconLibraryContainer.appendChild(iconElement);
-    }
-    // Select the correct radio buttons
-    var showBookmarkNamesOptions = $('bookmarkNameButtons').getElementsByTagName('input');
-    var showBookmarkNames = data.showBookmarkNames;
-    switch (showBookmarkNames) {
-      case 'never':
-        showBookmarkNamesOptions[0].checked = true;
-        break;
-      case 'always':
-        showBookmarkNamesOptions[2].checked = true;
-        break;
-      default: // hover
-        showBookmarkNamesOptions[1].checked = true;
-    }
-
-    var bookmarkPositionOptions = $('bookmarkPositionButtons').getElementsByTagName('input');
-    var bookmarkPosition = data.bookmarkPosition;
-    switch (bookmarkPosition) {
-      case 'top':
-        bookmarkPositionOptions[0].checked = true;
-        break;
-      case 'bottom':
-        bookmarkPositionOptions[2].checked = true;
-        break;
-      default: // middle
-        bookmarkPositionOptions[1].checked = true;
-    }
+    setBackgroundImage(data.backgroundImage, data.backgroundPosition, data.backgroundSize);
+    setOptions(data);
+    addBookmarks(data.sites);
+    setIcons(data.icons);
   });
 }
 
-function setBackgroundImage(imgSrc) {
-  var windowWidth = window.innerWidth;
-  var windowHeight = window.innerHeight;
-  var ratio = windowHeight / windowWidth;
-  var container = $('bgPreviewContainer');
-  var imgElement = $('bgImgPreview');
-  imgElement.src = imgSrc;
+function setBackgroundImage(imgSrc, position = $('backgroundPositionSelect').value, size = $('backgroundSizeSelect').value) {
+  let windowWidth = window.innerWidth;
+  let windowHeight = window.innerHeight;
+  let ratio = windowHeight / (windowWidth || 1);
+  let container = $('bgPreviewContainer');
   container.style.width = '350px';
-  container.style.height = 350 * ratio + 'px';
-  if (windowWidth > windowHeight) {
-    imgElement.style.width = '100%';
-    imgElement.style.height = 'auto';
-  } else {
-    imgElement.style.width = 'auto';
-    imgElement.style.height = '100%';
+  container.style.height = Math.round(350 * ratio) + 'px';
+  container.style.backgroundImage = `url(${imgSrc})`;
+  container.style.backgroundPositionX = 'center';
+  container.style.backgroundPositionY = position;
+  container.style.backgroundSize = size;
+  container.style.backgroundRepeat = 'no-repeat';
+}
+
+function setOptions(data) {
+  let showBookmarkNamesOptions = $('showBookmarkNamesSelect').children;
+  let bookmarkPositionOptions = $('bookmarkPositionSelect').children;
+  let backgroundPositionOptions = $('backgroundPositionSelect').children;
+
+  updateSelectEl(showBookmarkNamesOptions, data.showBookmarkNames);
+  updateSelectEl(bookmarkPositionOptions, data.bookmarkPosition);
+  updateSelectEl(backgroundPositionOptions, data.backgroundPosition);
+}
+
+function addBookmarks(sites) {
+  let bookmarkList = $('bookmarkList');
+  let newBookmarkBtn = $('newBookmarkBtn');
+  if (sites.length) {
+    let bookmarkArray = [];
+    for (let site of sites) {
+      let iconImg = document.createElement('img');
+      iconImg.src = site.imgUrl;
+      iconImg.id = site.id;
+      iconImg.title = site.url;
+      iconImg.name = site.name;
+      iconImg.className = 'draggableIcon';
+      iconImg.addEventListener('click', function () { showEditMenu(this) });
+      bookmarkList.insertBefore(iconImg, newBookmarkBtn);
+      bookmarkArray.push(iconImg);
+    }
+    makeSortable(bookmarkArray);
+  }
+}
+
+function setIcons(icons) {
+  // Find the default icon
+  defaultIconUrl = icons.find((icon) => icon.name === 'Default') || '';
+
+  // Load set of predefined icons
+  let iconLibraryContainer = $('iconLibraryContainer');
+
+  for (let icon of icons) {
+    let iconElement = document.createElement('img');
+    iconElement.className = 'libraryImage';
+    iconElement.src = icon.imgUrl;
+    iconElement.alt = icon.name;
+    iconElement.onclick = function () { iconClicked(iconElement) };
+    iconLibraryContainer.appendChild(iconElement);
+  }
+}
+
+function updateSelectEl(el, val) {
+  for (let option of el) {
+    if (option.value === val) {
+      option.setAttribute('selected', 'selected');
+    }
+    else {
+      option.removeAttribute('selected');
+    }
   }
 }
 
@@ -201,7 +200,7 @@ function saveBookmark() {
 }
 
 function updateIds() {
-  var bookmarks = $('bookmarkList').getElementsByClassName('draggableIcon');
+  let bookmarks = $('bookmarkList').getElementsByClassName('draggableIcon');
   for (let i = 0; i < bookmarks.length; i++) {
     bookmarks[i].id = i;
   }
@@ -217,8 +216,8 @@ function deleteBookmark() {
 }
 
 function getElementLocation(el) {
-  var rect = el.getBoundingClientRect();
-  var scrollTop = window.pageYOffset || document.documentElement.scrollLeft;
+  let rect = el.getBoundingClientRect();
+  let scrollTop = window.pageYOffset || document.documentElement.scrollLeft;
   return {
     top: rect.top + scrollTop, bottom: rect.bottom + scrollTop,
     left: rect.left, right: rect.right
@@ -241,9 +240,9 @@ function showEditMenu(element, isNewBookmark) {
     hide($('importBookmarkBtn'));
     show($('deleteBookmarkBtn'));
   }
-  var iconLocation = getElementLocation(element);
-  var menu = $('editBookmarkMenu');
-  var menuHeading = $('editMenuHeading');
+  let iconLocation = getElementLocation(element);
+  let menu = $('editBookmarkMenu');
+  let menuHeading = $('editMenuHeading');
   menuHeading.innerText = isNewBookmark ? 'New Bookmark' : 'Edit Bookmark';
   show(menu);
 
@@ -279,15 +278,15 @@ function appendChromeBookmarks(bookmarks, targetEl) {
 }
 
 function getBookmarksFromChrome() {
-  var recentBookmarks = chrome.bookmarks.getRecent(10, function (recentBookmarks) { 
-    appendChromeBookmarks (recentBookmarks, $('recentBookmarksList')); 
+  let recentBookmarks = chrome.bookmarks.getRecent(10, function (recentBookmarks) {
+    appendChromeBookmarks(recentBookmarks, $('recentBookmarksList'));
   });
 
-  var topSites = chrome.topSites.get(function (topSites) { 
-    appendChromeBookmarks (topSites, $('topSitesList')); 
+  let topSites = chrome.topSites.get(function (topSites) {
+    appendChromeBookmarks(topSites, $('topSitesList'));
   });
 
-  var bookmarkTreeNodes = chrome.bookmarks.getTree(
+  let bookmarkTreeNodes = chrome.bookmarks.getTree(
     function (bookmarkTreeNodes) {
       if (bookmarkTreeNodes.length) {
         $('chromeBookmarks').append(getTreeNodes(bookmarkTreeNodes[0].children, true));
@@ -296,7 +295,7 @@ function getBookmarksFromChrome() {
 }
 
 function getTreeNodes(bookmarkNodes, isFirstNode) {
-  var list = document.createElement('ul');
+  let list = document.createElement('ul');
   if (isFirstNode) {
     list.classList.add('firstBookmarkNode');
   } else {
@@ -309,7 +308,7 @@ function getTreeNodes(bookmarkNodes, isFirstNode) {
 }
 
 function getNode(bookmarkNode) {
-  var li = document.createElement(bookmarkNode.title ? 'li' : 'div');
+  let li = document.createElement(bookmarkNode.title ? 'li' : 'div');
 
   // Highest level in tree contains no title, only list of child folders
   if (bookmarkNode.title) {
@@ -340,7 +339,7 @@ function getNode(bookmarkNode) {
 }
 
 function filterBookmarks(filter) {
-  var bookmarks = $('chromeBookmarks').getElementsByTagName('li');
+  let bookmarks = $('chromeBookmarks').getElementsByTagName('li');
   for (let i = 0; i < bookmarks.length; i++) {
     // Skip folders
     if (!bookmarks[i].title.length) {
@@ -368,10 +367,10 @@ function importBookmark() {
 }
 
 /*
- *      showModal Function
- */
+*      showModal Function
+*/
 function showModal(btnClicked) {
-  var showContent, hideContent;
+  let showContent, hideContent;
   // Edit Icon Modal
   if (btnClicked.name === 'icon') {
     $('scanIconInput').value = $('editUrlInput').value;
@@ -394,7 +393,7 @@ function showModal(btnClicked) {
 }
 
 function filterLibrary(filter) {
-  var icons = $('iconLibraryContainer').children;
+  let icons = $('iconLibraryContainer').children;
   for (let i = 0; i < icons.length; i++) {
     toggle(icons[i], icons[i].alt.toLowerCase().indexOf(filter) !== - 1);
   }
@@ -402,8 +401,8 @@ function filterLibrary(filter) {
 
 
 /*
- *      closeModal Function
- */
+*      closeModal Function
+*/
 function closeModal() {
   setModalMessage('');
   if (selectedIcon) {
@@ -424,38 +423,38 @@ function closeModal() {
   hide($('optionsModal'));
 }
 
-function removeChildren (parentElement) {
-  while(parentElement.lastChild) {
+function removeChildren(parentElement) {
+  while (parentElement.lastChild) {
     parentElement.removeChild(parentElement.lastChild);
   }
 }
 
 /*
- *     uploadIcon Function
- */
+*     uploadIcon Function
+*/
 function uploadIcon() {
   function onLoad(result) {
     $('modalIconPreview').src = result;
     $('modalIconBackground').src = result;
   }
 
-  var iconInput = $('uploadIcon');
+  let iconInput = $('uploadIcon');
   if (iconInput.files.length) {
-    var file = iconInput.files[0];
+    let file = iconInput.files[0];
     readFile(file, onLoad, function () { });
   }
 }
 
 /*
- *      setModalMessage Function
- */
+*      setModalMessage Function
+*/
 function setModalMessage(msg) {
   $('modalMessage').innerText = msg;
 }
 
 /*
- *     saveIcon Function
- */
+*     saveIcon Function
+*/
 function saveIcon() {
   if ($('uploadTabBtn').classList.contains('activeTab')) {
     selectedIcon = $('modalIconPreview');
@@ -481,8 +480,8 @@ function chromeBookmarkClicked(newBookmark) {
 }
 
 /*
- *      iconClicked Function
- */
+*      iconClicked Function
+*/
 function iconClicked(newIcon) {
   newIcon.classList.add('selectedIcon');
   if (selectedIcon) {
@@ -497,16 +496,16 @@ function getBookmarkElements() {
 }
 
 /*
- *      setUploadStatus Function
- */
+*      setUploadStatus Function
+*/
 function setUploadStatus(message) {
-  var statusEl = $("imgUploadStatus");
+  let statusEl = $("imgUploadStatus");
   statusEl.innerText = message;
 }
 
 /*
- *     restoreDefaultImage Function
- */
+*     restoreDefaultImage Function
+*/
 function restoreDefaultImage() {
   function onRestoreError() {
     setUploadStatus("Restoring default image failed");
@@ -521,23 +520,20 @@ function restoreDefaultImage() {
       readFile(response, onReaderLoad, onRestoreError);
     } else { onRestoreError(); }
   }
-  var resp = confirm("Restore default background image?\n\nThis cannot be undone...");
+  let resp = confirm("Restore default background image?\n\nThis cannot be undone...");
   if (!resp) { return; }
   getViaXhr('/images/bg.jpg', 'blob', onXhrGet, onRestoreError);
 }
 
 /*
- *     uploadImage Function
- */
+*     uploadImage Function
+*/
 function uploadImage() {
-  var imageInput = $('uploadImage');
+  let imageInput = $('uploadImage');
 
   function uploadSucces(result) {
-    var previewEl = $('bgImgPreview');
     setBackgroundImage(result);
-    chrome.storage.local.set({ "backgroundImage": result }, function (data) {
-      setUploadStatus("Upload complete");
-    });
+    chrome.storage.local.set({ "backgroundImage": result }, () => setUploadStatus("Upload complete"));
   }
 
   function uploadError() {
@@ -547,18 +543,18 @@ function uploadImage() {
   // If user clicks cancel on choose file diaglog, this function will still be
   // called but files variable will be empty... so we check first
   if (imageInput.files.length) {
-    var file = imageInput.files[0];
+    let file = imageInput.files[0];
     setUploadStatus("Uploading...");
     readFile(file, uploadSucces, uploadError);
   }
 }
 
 /*
- *    saveBookmarks Function
- */
+*    saveBookmarks Function
+*/
 function saveBookmarks() {
-  var bookmarks = getBookmarkElements();
-  var bookmarkArray = [];
+  let bookmarks = getBookmarkElements();
+  let bookmarkArray = [];
   for (let i = 0; i < bookmarks.length; i++) {
     bookmarkArray.push({
       name: bookmarks[i].name, url: bookmarks[i].title,
@@ -571,10 +567,10 @@ function saveBookmarks() {
 }
 
 /*
- *      changeTab Function
- */
+*      changeTab Function
+*/
 function changeTab(tab) {
-  var activeTabs = document.getElementsByClassName('activeTab');
+  let activeTabs = document.getElementsByClassName('activeTab');
   if (activeTabs.length) {
     hide($(activeTabs[0].getAttribute('data-content')));
     activeTabs[0].classList.remove('activeTab');
@@ -593,23 +589,23 @@ function changeTab(tab) {
 }
 
 /*
- *      getFavIcons Function
- */
+*      getFavIcons Function
+*/
 function getFavIcons() {
-  var url = $('scanIconInput').value;
+  let url = $('scanIconInput').value;
 
   function toggleScanButton() {
-    var scanSiteBtn = $('scanIconBtn');
+    let scanSiteBtn = $('scanIconBtn');
     scanSiteBtn.disabled = !scanSiteBtn.disabled;
   }
 
   function setScanMessage(msg) {
-    var messageDiv = $('scanMessage');
+    let messageDiv = $('scanMessage');
     messageDiv.innerText = msg;
   }
 
   function callback(icons, msg) {
-    var scanResultsContainer = $('scanResultsContainer');
+    let scanResultsContainer = $('scanResultsContainer');
     for (let i = 0; i < icons.length; i++) {
       let iconElement = document.createElement('img');
       iconElement.className = 'scanIcon';
@@ -628,10 +624,10 @@ function getFavIcons() {
 }
 
 /*
- *      getViaXhr Function
- */
+*      getViaXhr Function
+*/
 function getViaXhr(url, responseType, onLoad, onError) {
-  var request = new XMLHttpRequest();
+  let request = new XMLHttpRequest();
   request.responseType = responseType;
   request.open('GET', url, true);
   request.addEventListener("error", onError);
@@ -641,10 +637,10 @@ function getViaXhr(url, responseType, onLoad, onError) {
 }
 
 /*
- *      readFile Function
- */
+*      readFile Function
+*/
 function readFile(file, onLoad, onError) {
-  var reader = new FileReader();
+  let reader = new FileReader();
   reader.addEventListener("error", onError);
   reader.addEventListener("load", function () { onLoad(reader.result) });
   reader.readAsDataURL(file);

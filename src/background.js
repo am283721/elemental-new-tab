@@ -116,9 +116,9 @@ chrome.runtime.onInstalled.addListener(function (details) {
 
     function saveAllSettings() {
         chrome.storage.local.set({
-            'sites': sites, 'icons': icons, 'backgroundImage': backgroundImage,
-            'editImage': editImage, 'showBookmarkNames': 'hover',
-            'bookmarkPosition': 'middle'
+            sites: sites, icons: icons, backgroundImage: backgroundImage,
+            editImage: editImage, showBookmarkNames: 'hover',
+            bookmarkPosition: 'middle', backgroundPosition: 'center'
         }, function () { });
     }
 
@@ -142,9 +142,9 @@ chrome.runtime.onInstalled.addListener(function (details) {
         });
     } else if (details.reason === 'update') {
         readImageArray(icons, 0, function () {
-            saveSetting({ 'icons': icons }, function() {
-                chrome.runtime.openOptionsPage(function() { 
-                    alert('Elemental New Tab has been updated. Thank you for your continued support!'); 
+            saveSetting({ 'icons': icons }, function () {
+                chrome.runtime.openOptionsPage(function () {
+                    alert('Elemental New Tab has been updated. Thank you for your continued support!');
                 })
             });
         });

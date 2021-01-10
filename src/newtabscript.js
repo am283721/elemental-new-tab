@@ -1,11 +1,13 @@
 "use strict";
 
 chrome.storage.local.get({
-    'backgroundImage': '', 'sites': [], 'showBookmarkNames': 'hover',
-    'bookmarkPosition': 'middle'
+    backgroundImage: '', sites: [], showBookmarkNames: 'hover',
+    bookmarkPosition: 'middle', backgroundPosition: 'center', backgroundSize: 'cover'
 }, function (data) {
     // Set background image
     document.body.style.backgroundImage = "url('" + data.backgroundImage + "')";
+    document.body.style.backgroundPosition = data.backgroundPosition;
+    document.body.style.backgroundSize = data.backgroundSize;
 
     document.getElementById('optionsBtn').addEventListener('click', function () {
         if (chrome.runtime.openOptionsPage) {
@@ -16,7 +18,7 @@ chrome.storage.local.get({
     });
 
     // Load bookmarks
-    var bookmarkContainer = document.getElementById('linksContainer');
+    let bookmarkContainer = document.getElementById('linksContainer');
     for (let i = 0; i < data.sites.length; i++) {
         let newImage = new Image();
         let imgUrl = data.sites[i].url;
@@ -39,16 +41,16 @@ chrome.storage.local.get({
 
     // Update behavior of bookmark names depending on user settings
     // Default behavior is show names on hover
-    var showNames = data.showBookmarkNames;
+    let showNames = data.showBookmarkNames;
     if (showNames !== 'hover') {
-        var elements = document.querySelectorAll('.linkText');
-        var nameOpacity = showNames === 'never' ? 0 : 1;
+        let elements = document.querySelectorAll('.linkText');
+        let nameOpacity = showNames === 'never' ? 0 : 1;
         for (let i = 0; i < elements.length; i++) {
             elements[i].style.opacity = nameOpacity;
         }
     }
 
-    var bookmarkPosition = data.bookmarkPosition;
+    let bookmarkPosition = data.bookmarkPosition;
     if (bookmarkPosition === 'top') {
         bookmarkContainer.style.marginTop = '50px';
     } else if (bookmarkPosition === 'middle') {

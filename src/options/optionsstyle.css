@@ -33,6 +33,24 @@ h4 {
 
 .modal-shadow { box-shadow: 0 3px 6px rgba(44, 44, 44, 0.23); }
 
+#successMsg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    
+}
+
+#successMsg div {
+    position: relative;
+    margin: 18px auto;
+    color: #2ea52e;
+    border: #2ea52e 1px solid;
+    border-radius: 10px;
+    padding: 2px 8px;
+    width: 130px;
+}
+
 button {
     border: 1px solid rgb(218, 220, 224);
     border-radius: 4px;
@@ -75,6 +93,10 @@ button:disabled {
     max-width: 1080px;
     margin: 0 auto;
     overflow: auto;
+}
+
+.setting-select {
+    width: 120px;
 }
 
 .innerContent { margin: 0 20px; }

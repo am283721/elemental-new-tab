@@ -10,28 +10,55 @@
 
 <body>
   <div id="newTabSettings" class="modal-shadow">
-
-    <!-- UI SECTION -->
+    <!-- <div id="successMsg">
+      <div>Settings Saved</div>
+    </div> -->
+    <!-- BOOKMARK OPTIONS SECTION -->
     <div class="floatSection col50">
-      <h3>Display</h3>
-      <h4>Show Bookmark Name</h4>
-      <div id="bookmarkNameButtons" class="">
-        <input type="radio" name="showBookmarkNames" value="never" id="neverShow" />
-        <label for="never">Never</label><br>
-        <input type="radio" name="showBookmarkNames" value="hover" id="showOnHover" />
-        <label for="hover">On Hover</label><br>
-        <input type="radio" name="showBookmarkNames" value="always" id="alwaysShow" />
-        <label for="always">Always</label>
+      <h3>Bookmark Options</h3>
+      <h4>Show Bookmark Names</h4>
+      <div id="bookmarkNameButtons">
+        <select id="showBookmarkNamesSelect" class="setting-select" data-setting="showBookmarkNames">
+          <option value="never">Never</option>
+          <option value="hover" selected>On Hover</option>
+          <option value="always">Always</option>
+        </select>
       </div>
 
       <h4>Bookmark Position</h4>
-      <div id="bookmarkPositionButtons" class="">
-        <input type="radio" name="bookmarkPosition" value="top" id="topPosition" />
-        <label for="top">Top</label><br>
-        <input type="radio" name="bookmarkPosition" value="middle" id="middlePosition" />
-        <label for="middle">Middle</label><br>
-        <input type="radio" name="bookmarkPosition" value="bottom" id="bottomPosition" />
-        <label for="bottom">Bottom</label>
+      <div id="bookmarkPositionButtons">
+        <select id="bookmarkPositionSelect" class="setting-select" data-setting="bookmarkPosition">
+          <option value="top">Top</option>
+          <option value="middle" selected>Middle</option>
+          <option value="bottom">Bottom</option>
+        </select>
+      </div>
+
+    </div>
+
+    <!-- BACKGROUND OPTIONS SECTION-->
+    <div class="floatSection col50">
+      <h3>Background Options</h3>
+      <h4>Position</h4>
+      <div id="backgroundPositionButtons">
+        <select id="backgroundPositionSelect" class="setting-select" data-setting="backgroundPosition">
+          <option value="top" selected>Top</option>
+          <option value="center">Middle</option>
+          <option value="bottom">Bottom</option>
+        </select>
+      </div>
+
+      <h4>Size</h4>
+      <div id="bookmarkSizeButtons">
+        <select id="backgroundSizeSelect" class="setting-select" data-setting="backgroundSize">
+          <option value="cover" selected>Fill</option>
+          <option value="contain">Fit</option>
+        </select>
+      </div>
+
+      <h3>Background Preview</h3>
+      <div id="bgPreviewContainer">
+        <!-- <img id="bgImgPreview" src="" alt="image preview" /> -->
       </div>
 
       <h4>Upload new background</h4>
@@ -40,23 +67,12 @@
         <button id="restoreButton">Restore</button> -->
       <br><br>
       <div id="imgUploadStatus"></div>
-      <!--       
-        <input type="checkbox" name="showBookmarkNames" id="showBookmarkNames" value="showBookmarkNames" />
-        <label for="showBookmarkNames">Always show bookmark names</label> -->
 
-    </div>
-
-    <!-- PREVIEW SECTION-->
-    <div class="floatSection col50">
-      <h3>Background Preview</h3>
-      <div id="bgPreviewContainer">
-        <img id="bgImgPreview" src="" alt="image preview" />
-      </div>
     </div>
 
     <!-- BOOKMARKS SECTION -->
     <div id="bookmarkSection">
-      <h3>Bookmarks<span class="hint"> - Click to edit, drag and drop to re-order</span></h3>
+      <h3>Bookmarks<span class="hint"> - Click on a bookmark to edit or delete. Drag and drop bookmarks to re-order</span></h3>
       <div id="bookmarkList">
         <button id="newBookmarkBtn">New Bookmark</button>
       </div>
