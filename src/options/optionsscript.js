@@ -1,6 +1,7 @@
 "use strict";
 
 let defaultIconUrl = '', currentBookmark, selectedIcon, selectedBookmark;
+let successTimer = null;
 const MAX_TITLE_LENGTH = 70;
 
 function $(id) { return document.getElementById(id); }
@@ -62,6 +63,7 @@ function addEventListeners() {
 
 function dropdownChange() {
   chrome.storage.local.set({ [this.getAttribute('data-setting')]: this.value });
+  showSuccessAlert();
 
   if (this.id === 'backgroundPositionSelect') {
     $('bgPreviewContainer').style.backgroundPositionY = this.value;
@@ -514,6 +516,7 @@ function restoreDefaultImage() {
     function onReaderLoad(result) {
       chrome.storage.local.set({ 'backgroundImage': result }, function () {
         location.reload();
+        showSuccessAlert();
       });
     }
     if (status == 200) {
@@ -534,6 +537,7 @@ function uploadImage() {
   function uploadSucces(result) {
     setBackgroundImage(result);
     chrome.storage.local.set({ "backgroundImage": result }, () => setUploadStatus("Upload complete"));
+    showSuccessAlert();
   }
 
   function uploadError() {
@@ -564,6 +568,7 @@ function saveBookmarks() {
   chrome.storage.local.set({
     sites: bookmarkArray
   }, function () { });
+  showSuccessAlert();
 }
 
 /*
@@ -586,6 +591,22 @@ function changeTab(tab) {
     selectedBookmark = undefined;
   }
   setModalMessage('');
+}
+
+/*
+*      showSuccessAlert Function
+*/
+function showSuccessAlert() {
+  if (successTimer) {
+    clearTimeout(successTimer);
+  }
+
+  $('successMsg').style.opacity = 1;
+
+  successTimer = setTimeout(() => {
+    $('successMsg').style.opacity = 0;
+    successTimer = null;
+  }, 2500);
 }
 
 /*

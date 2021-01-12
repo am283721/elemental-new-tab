@@ -34,11 +34,13 @@ h4 {
 .modal-shadow { box-shadow: 0 3px 6px rgba(44, 44, 44, 0.23); }
 
 #successMsg {
+    font-size: 1.1em;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    
+    opacity: 0;
+    transition: all 0.6s ease;
 }
 
 #successMsg div {
@@ -48,7 +50,8 @@ h4 {
     border: #2ea52e 1px solid;
     border-radius: 10px;
     padding: 2px 8px;
-    width: 130px;
+    width: 120px;
+    text-align: center;
 }
 
 button {

@@ -12,13 +12,12 @@ body {
 }
 
 #optionsBtn {
-    opacity: 0.4;
+    opacity: 0.7;
     position: fixed;
     bottom: 5px;
     left: 5px;
     width: 20px;
     height: 20px;
-    /* color: white; */
     cursor: pointer;
 }
 

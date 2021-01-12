@@ -52,9 +52,9 @@ chrome.storage.local.get({
 
     let bookmarkPosition = data.bookmarkPosition;
     if (bookmarkPosition === 'top') {
-        bookmarkContainer.style.marginTop = '50px';
+        bookmarkContainer.style.paddingTop = '50px';
     } else if (bookmarkPosition === 'middle') {
-        bookmarkContainer.style.marginTop = '45vh';//((window.innerHeight / 2) - 80) + 'px';
+        bookmarkContainer.style.paddingTop = '45vh';
     } else {
         bookmarkContainer.style.position = 'absolute';
         bookmarkContainer.style.bottom = '10px';

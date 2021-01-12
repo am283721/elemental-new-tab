@@ -2,7 +2,7 @@
   "name": "Elemental New Tab",
   "short_name": "ElementalTab",
   "description": "Overrides the default new tab page with a minimalistic design of customizable links and background image.",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "chrome_url_overrides": {
     "newtab": "newtab.html"
   },
