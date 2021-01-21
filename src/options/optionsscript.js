@@ -86,7 +86,7 @@ function checkPermissions() {
 function loadDataFromStorage() {
   chrome.storage.local.get({
     editImage: '', backgroundImage: '', sites: [],
-    icons: [], showBookmarkNames: 'hover', bookmarkPosition: 'middle', backgroundPosition: 'top'
+    icons: [], showBookmarkNames: 'hover', bookmarkPosition: 'middle', bookmarkShape: 'circle', backgroundPosition: 'top'
   }, function (data) {
     setBackgroundImage(data.backgroundImage, data.backgroundPosition, data.backgroundSize);
     setOptions(data);
@@ -113,10 +113,12 @@ function setOptions(data) {
   let showBookmarkNamesOptions = $('showBookmarkNamesSelect').children;
   let bookmarkPositionOptions = $('bookmarkPositionSelect').children;
   let backgroundPositionOptions = $('backgroundPositionSelect').children;
+  let bookmarkShapeOptions = $('bookmarkShapeSelect').children;
 
   updateSelectEl(showBookmarkNamesOptions, data.showBookmarkNames);
   updateSelectEl(bookmarkPositionOptions, data.bookmarkPosition);
   updateSelectEl(backgroundPositionOptions, data.backgroundPosition);
+  updateSelectEl(bookmarkShapeOptions, data.bookmarkShape);
 }
 
 function updateSelectEl(el, val) {

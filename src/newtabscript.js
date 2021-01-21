@@ -2,7 +2,7 @@
 
 chrome.storage.local.get({
     backgroundImage: '', sites: [], showBookmarkNames: 'hover',
-    bookmarkPosition: 'middle', backgroundPosition: 'center', backgroundSize: 'cover'
+    bookmarkPosition: 'middle', bookmarkShape: 'circle', backgroundPosition: 'center', backgroundSize: 'cover'
 }, function (data) {
     // Set background image
     document.body.style.backgroundImage = "url('" + data.backgroundImage + "')";
@@ -19,13 +19,15 @@ chrome.storage.local.get({
 
     // Load bookmarks
     let bookmarkContainer = document.getElementById('linksContainer');
+    let bookmarkClass = `icon-${data.bookmarkShape}`;
+
     for (let i = 0; i < data.sites.length; i++) {
         let newImage = new Image();
         let imgUrl = data.sites[i].url;
         let linkText = data.sites[i].name;
         newImage.src = data.sites[i].imgUrl;
         newImage.id = 'link-' + i;
-        newImage.className = 'linkImg';
+        newImage.className = `link-icon ${bookmarkClass}`;
         let newDiv = document.createElement('div');
         newDiv.className = 'link';
         newDiv.addEventListener('click', () =>

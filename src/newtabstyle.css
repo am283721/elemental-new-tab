@@ -47,14 +47,21 @@ body {
     margin-bottom: 20px;
 }
 
-.linkImg {
+.link-icon {
     width: 60%;
     height: 60%;
     position: relative;
-    border-radius: 90px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, .23);
     transition: all .3s;
     margin: 0 20%;
+}
+
+.icon-circle {
+    border-radius: 90px;
+}
+
+.icon-square {
+    border-radius: 15px;
 }
 
 .linkText {
