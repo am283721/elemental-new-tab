@@ -72,16 +72,32 @@ button {
     background-color: #1a73e8;
 }
 
+.highlightBtn:focus {
+    box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 50%);
+}
+
+#backgroundBtnContainer {
+    width: 350px;
+    display: flex;
+    justify-content: center;
+}
+
+.backgroundBtn {
+    height: 25px;
+    margin: 20px;
+}
+
 button:hover {
     background-color: rgba(66,133,244, 0.04);
     border-color: rgb(210, 227, 252);
     box-shadow: 1px 1px 3px 0px rgba(44, 44, 44, 0.23);
 }
 
-.highlightBtn:hover { 
+.highlightBtn:enabled:hover { 
     color: white;
     background-color: #1a65c7;
 }
+
 
 button:disabled {
     color: rgb(131, 131, 131);
@@ -293,6 +309,11 @@ button:disabled {
     max-height: 450px;
 }
 
+.newBackgroundModalBody {
+    height: 120px;
+    min-height: 120px;
+}
+
 .tab {
     overflow: hidden;
     margin-bottom: 15px;
@@ -303,7 +324,7 @@ button:disabled {
     font-size: 1.5em;
     float: left;
     border: none;
-    background-color: none;
+    background: none;
     cursor: pointer;
     padding-left: 0;
     padding-right: 30px;
@@ -388,16 +409,23 @@ button:disabled {
     filter: brightness(70%);
 }
 
+#uploadImage {
+    width: 100%;
+}
+
+#loadingUrlMessage {
+    margin-top: 5px;
+}
+
+#imageFromUrlInput {
+    width: 100%;
+}
+
 .selectedIcon {
     border: solid 2px grey;
     border-radius: 4px;
     filter: brightness(70%);
 }
-
-/* .selectedChromeBookmark {
-    background-color: rgba(182, 182, 182, 0.3);
-    border-radius: 4px;
-} */
 
 .modalColumn {
     width: 50%;
@@ -416,21 +444,21 @@ button:disabled {
     margin: 10px 5px;
 }
 
-#modalMessage {
+.modalMessage {
     float: left;
     color: red;
     margin: 15px 5px;
 }
 
-#modalClose {
+.modalClose {
     color: #aaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
 }
 
-#modalClose:hover,
-#modalClose:focus {
+.modalClose:hover,
+.modalClose:focus {
     color: black;
     text-decoration: none;
     cursor: pointer;
@@ -456,5 +484,5 @@ button:disabled {
     z-index: 11;
     position: absolute;
     margin-left: 25px;
-    opacity: .3;
+    opacity: 0.1;
 }

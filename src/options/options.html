@@ -58,16 +58,12 @@
 
       <h3>Background Preview</h3>
       <div id="bgPreviewContainer">
-        <!-- <img id="bgImgPreview" src="" alt="image preview" /> -->
       </div>
-
-      <h4>Upload new background</h4>
-      <input id="uploadImage" type="file" accept="image/*" />
-      <!-- <br><br>
-        <button id="restoreButton">Restore</button> -->
-      <br><br>
+      <div id="backgroundBtnContainer">
+        <button id="newBackgroundButton" class="highlightBtn backgroundBtn">Change Background</button>
+        <button id="restoreButton" class="backgroundBtn">Restore Original</button>
+      </div>
       <div id="imgUploadStatus"></div>
-
     </div>
 
     <!-- BOOKMARKS SECTION -->
@@ -119,109 +115,153 @@
       </div>
     </div> -->
 
-  <!-- MODAL SECTION -->
-  <div id="optionsModal" class="modal modal-shadow">
+  <!-- NEW BACKGROUND MODAL -->
+  <div id="newBackgroundModal" class="modal modal-shadow">
     <div class="modalContent">
-      <span id="modalClose">&times;</span>
+      <span id="backgroundModalClose" class="modalClose">&times;</span>
 
-      <!--  MODAL BODY  -->
-      <div class="modalBody">
+      <div class="modalBody newBackgroundModalBody">
         <div class="bookmarkModalContent">
           <div class="tab">
-            <button class="tablinks" id="topSitesTabBtn" data-content="topSites">Top Sites</button>
-            <button class="tablinks" id="allBookmarksTabBtn" data-content="allChromeBookmarks">All Bookmarks</button>
-            <button class="tablinks" id="recentlyAddedTabBtn" data-content="recentlyAddedBookmarks">Recently Added</button>
+            <button class="tablinks activeTab" id="backgroundFromComputerTabBtn" data-content="fromComputerTab">From Computer</button>
+            <button class="tablinks" id="allBookmarksTabBtn" data-content="fromUrlTab">From URL</button>
           </div>
 
-          <div id="topSites" class="tabcontent">
-            <ul id="topSitesList" class="singleLevelList"></ul>
+          <div id="fromComputerTab" class="tabcontent" style="display:block">
+            <input id="uploadImageInput" type="file" accept="image/*">
           </div>
 
-          <div id="allChromeBookmarks" class="tabcontent">
-            <div id="searchBookmarksContainer" class="searchContainer">
-              <label for="searchBookmarksInput" class="searchLabel">Search</label>
-              <input id="searchBookmarksInput" class="searchInput" />
-            </div>
-            <div id="chromeBookmarks"></div>
-          </div>
-
-          <div id="recentlyAddedBookmarks" class="tabcontent">
-            <ul id="recentBookmarksList" class="singleLevelList"></ul>
+          <div id="fromUrlTab" class="tabcontent" style="display:none">
+            <label for="imageFromUrlInput">URL</label>
+            <input id="imageFromUrlInput" type="url">
+            <div id="loadingUrlMessage" style="display:none;">Loading Image, Please Wait...</div>
           </div>
 
         </div>
+      </div>
+      <div class="modalFooter">
+        <div id="backgroundModalMessage" class="modalMessage"></div>
+        <button id="backgroundModalSaveBtn" class="highlightBtn modalSave">Choose</button>
+        <button id="backgroundModalCancelBtn" class="modalCancel">Cancel</button>
+      </div>
+    </div>
+  </div>
 
-        <div class="iconModalContent">
-          <div class="tab">
-            <button class="tablinks" id="libraryTabBtn" data-content="library">Library</button>
-            <button class="tablinks" id="scanTabBtn" data-content="scan">Scan</button>
-            <button class="tablinks" id="uploadTabBtn" data-content="upload">Upload</button>
+  <!-- BOOKMARK MODAL -->
+  <div id="bookmarkModal" class="modal modal-shadow">
+    <div class="modalContent">
+      <span id="bookmarkModalClose" class="modalClose">&times;</span>
+
+      <div class="modalBody">
+        <div class="tab">
+          <button class="tablinks" id="topSitesTabBtn" data-content="topSites">Top Sites</button>
+          <button class="tablinks" id="allBookmarksTabBtn" data-content="allChromeBookmarks">All Bookmarks</button>
+          <button class="tablinks" id="recentlyAddedTabBtn" data-content="recentlyAddedBookmarks">Recently Added</button>
+        </div>
+
+        <div id="topSites" class="tabcontent">
+          <ul id="topSitesList" class="singleLevelList"></ul>
+        </div>
+
+        <div id="allChromeBookmarks" class="tabcontent">
+          <div id="searchBookmarksContainer" class="searchContainer">
+            <label for="searchBookmarksInput" class="searchLabel">Search</label>
+            <input id="searchBookmarksInput" class="searchInput" />
           </div>
+          <div id="chromeBookmarks"></div>
+        </div>
 
-          <div id="library" class="tabcontent">
-            <div id="searchIconContainer" class="searchContainer">
-              <label for="searchIconInput" class="searchLabel">Search</label>
-              <input id="searchIconInput" class="searchInput" />
-            </div>
-            <div id="iconLibraryContainer"></div>
+        <div id="recentlyAddedBookmarks" class="tabcontent">
+          <ul id="recentBookmarksList" class="singleLevelList"></ul>
+        </div>
+      </div>
+
+      <div class="modalFooter">
+        <div id="bookmarkModalMessage" class="modalMessage"></div>
+        <button id="bookmarkModalSaveBtn" class="highlightBtn modalSave">Choose</button>
+        <button id="bookmarkModalCancelBtn" class="modalCancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ICON MODAL -->
+  <div id="iconModal" class="modal modal-shadow">
+    <div class="modalContent">
+      <span id="iconModalClose" class="modalClose">&times;</span>
+
+      <div class="modalBody">
+        <div class="tab">
+          <button class="tablinks" id="libraryTabBtn" data-content="libraryTabContent">Library</button>
+          <button class="tablinks" id="scanTabBtn" data-content="scanTabContent">Scan</button>
+          <button class="tablinks" id="uploadTabBtn" data-content="uploadTabContent">Upload</button>
+        </div>
+
+        <div id="libraryTabContent" class="tabcontent">
+          <div id="searchIconContainer" class="searchContainer">
+            <label for="searchIconInput" class="searchLabel">Search</label>
+            <input id="searchIconInput" class="searchInput" />
           </div>
+          <div id="iconLibraryContainer"></div>
+        </div>
 
-          <div id="scan" class="tabcontent">
-            <div class="modalColumn">
-              <div><b>Scan site for icon</b></div><br>
-              <div>We can attempt to search the given site for an icon. Multiple versions of the icon
-                might exist at different resolutions. Or there might not be any icons defined.</div><br><br>
-              <div id="scanDiv">
-                <div>Base URL of website (ex: https://google.com):</div>
-                <div><input id="scanIconInput" /></div>
-                <div><button id="scanIconBtn">Scan</button></div>
-                <br>
-                <div id="scanMessage"></div>
-              </div>
-              <div id="urlPermissionDiv">
-                <button id="getUrlPermission">Allow extension to scan websites</button>
-              </div>
-            </div>
-            <div class="modalColumn">
-              <div><b>Results:</b></div><br>
-              <div id="scanResultsContainer"></div>
-            </div>
-          </div>
-
-          <div id="upload" class="tabcontent">
-            <div class="modalColumn">
-              <div><b>Upload your own icon</b></div><br>
-              <div>Recommended format:</div>
-              <ul>
-                <li>Square</li>
-                <li>Between 100 and 300 pixels</li>
-                <li>Logo in the center</li>
-              </ul>
+        <div id="scanTabContent" class="tabcontent">
+          <div class="modalColumn">
+            <div><b>Scan site for icon</b></div><br>
+            <div>We can attempt to search the given site for an icon. Multiple versions of the icon
+              might exist at different resolutions. Or there might not be any icons defined.</div><br><br>
+            <div id="scanDiv">
+              <div>Base URL of website (ex: https://google.com):</div>
+              <div><input id="scanIconInput" /></div>
+              <div><button id="scanIconBtn">Scan</button></div>
               <br>
-              <div><input id="uploadIcon" type="file" accept="image/*" /></div><br><br>
+              <div id="scanMessage"></div>
             </div>
-            <div class="modalColumn">
-              <div><b>Preview:</b></div><br>
-              <div id="iconPreviewContainer">
-                <img id="modalIconPreview" />
-                <img id="modalIconBackground" />
-              </div>
+            <div id="urlPermissionDiv">
+              <button id="getUrlPermission">Allow extension to scan websites</button>
+            </div>
+          </div>
+          <div class="modalColumn">
+            <div><b>Results:</b></div><br>
+            <div id="scanResultsContainer"></div>
+          </div>
+        </div>
+
+        <div id="uploadTabContent" class="tabcontent">
+          <div class="modalColumn">
+            <div><b>Upload your own icon</b></div><br>
+            <div>Recommended format:</div>
+            <ul>
+              <li>Square</li>
+              <li>Between 100 and 300 pixels</li>
+              <li>Logo in the center</li>
+            </ul>
+            <br>
+            <div><input id="uploadIconInput" type="file" accept="image/*" /></div><br><br>
+          </div>
+          <div class="modalColumn">
+            <div><b>Preview:</b></div><br>
+            <div id="iconPreviewContainer">
+              <img id="modalIconPreview" />
+              <img id="modalIconBackground" />
             </div>
           </div>
         </div>
       </div>
-      <!--  MODAL FOOTER  -->
+
       <div class="modalFooter">
-        <div id="modalMessage"></div>
-        <button id="iconModalSaveBtn" class="highlightBtn iconModalContent">Choose</button>
-        <button id="bookmarkModalSaveBtn" class="highlightBtn bookmarkModalContent">Choose</button>
-        <button id="modalCancelBtn">Cancel</button>
+        <div id="iconModalMessage" class="modalMessage"></div>
+        <button id="iconModalSaveBtn" class="highlightBtn modalSave">Choose</button>
+        <button id="iconModalCancelBtn" class="modalCancel">Cancel</button>
       </div>
     </div>
 
   </div>
 
 </body>
+<script src="modal.js"></script>
+<script src="backgroundmodal.js"></script>
+<script src="bookmarkmodal.js"></script>
+<script src="iconmodal.js"></script>
 <script src="optionsscript.js"></script>
 <script src="faviconscanner.js"></script>
 <script src="dragandsort.js"></script>
