@@ -35,6 +35,7 @@ class BookmarkModal extends Modal {
         if (this.selectedBookmark) {
             $('editNameInput').value = this.selectedBookmark.getAttribute('data-bookmarkname');
             $('editUrlInput').value = this.selectedBookmark.title;
+            // getDefaultTileIcon(this.selectedBookmark.title);
             this.hide();
         } else {
             this.setMessage('No bookmark selected');
