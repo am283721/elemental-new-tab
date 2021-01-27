@@ -1,25 +1,28 @@
-'use strict';
+import { getById, showElement, hideElement, loadImageFromUrl } from "./modules/utils.js";
+import { makeSortable, updateSortingIds } from "./modules/dragandsort.js";
+import BackgroundModal from "./modules/backgroundmodal.js";
+import IconModal from "./modules/iconmodal.js";
+import BookmarkModal from "./modules/bookmarkmodal.js";
 
 let defaultIconUrl = '';
 let successTimer = null;
 let newBackgroundModal, iconModal, bookmarkModal, currentBookmark;
 
-function $(id) { return document.getElementById(id); }
-function showElement(el) { el.style.display = 'block'; }
-function hideElement(el) { el.style.display = 'none'; }
-
-function onPageLoad() {
-  newBackgroundModal = new BackgroundModal($('newBackgroundModal'));
-  iconModal = new IconModal($('iconModal'));
-  bookmarkModal = new BookmarkModal($('bookmarkModal'));
+async function onPageLoad() {
+  newBackgroundModal = new BackgroundModal(getById('newBackgroundModal'));
+  iconModal = new IconModal(getById('iconModal'));
+  bookmarkModal = new BookmarkModal(getById('bookmarkModal'));
 
   checkPermissions();
-  loadDataFromStorage();
+  await loadDataFromStorage();
   addEventListeners();
+
+  getById('newBookmarkBtn').classList.add(getBookmarkShapeCls());
+  getById('modalIconPreview').classList.add(getBookmarkShapeCls());
 }
 
 function newListener(elementID, event, func) {
-  $(elementID).addEventListener(event, func);
+  getById(elementID).addEventListener(event, func);
 }
 
 function addEventListeners() {
@@ -31,6 +34,8 @@ function addEventListeners() {
   newListener('saveBookmarkBtn', 'click', saveBookmark);
   newListener('newBookmarkBtn', 'click', function () { showEditBookmarkMenu(this, true); });
   newListener('restoreButton', 'click', restoreDefaultImage);
+  document.addEventListener('dragend', () => saveBookmarks());
+  document.addEventListener('backgroundchange', (ev) => onBackgroundChange(ev));
 
   let dropdowns = document.getElementsByClassName('setting-select');
 
@@ -51,10 +56,20 @@ function dropdownChange() {
   showSuccessAlert();
 
   if (this.id === 'backgroundPositionSelect') {
-    $('bgPreviewContainer').style.backgroundPositionY = this.value;
+    getById('bgPreviewContainer').style.backgroundPositionY = this.value;
   }
   else if (this.id === 'backgroundSizeSelect') {
-    $('bgPreviewContainer').style.backgroundSize = this.value;
+    getById('bgPreviewContainer').style.backgroundSize = this.value;
+  }
+  else if (this.id === 'bookmarkShapeSelect') {
+    let previousCls = this.value === 'circle' ? 'icon-square' : 'icon-circle';
+    let newCls = `icon-${this.value}`;
+    let icons = document.getElementsByClassName(previousCls);
+
+    while (icons.length) {
+      icons[0].classList.add(newCls);
+      icons[0].classList.remove(previousCls);
+    }
   }
 }
 
@@ -64,9 +79,10 @@ function dropdownChange() {
 *     button to prompt the user
 */
 function checkPermissions() {
-  let scanDiv = $('scanDiv');
-  let urlPermissionDiv = $('urlPermissionDiv');
-  let getPermissionBtn = $('getUrlPermission');
+  let scanDiv = getById('scanDiv');
+  let urlPermissionDiv = getById('urlPermissionDiv');
+  let getPermissionBtn = getById('getUrlPermission');
+
   chrome.permissions.contains({ origins: ['<all_urls>'] }, function (hasPermission) {
     if (hasPermission) { hideElement(urlPermissionDiv); }
     else {
@@ -84,22 +100,44 @@ function checkPermissions() {
 }
 
 function loadDataFromStorage() {
-  chrome.storage.local.get({
-    editImage: '', backgroundImage: '', sites: [],
-    icons: [], showBookmarkNames: 'hover', bookmarkPosition: 'middle', bookmarkShape: 'circle', backgroundPosition: 'top'
-  }, function (data) {
-    setBackgroundImage(data.backgroundImage, data.backgroundPosition, data.backgroundSize);
-    setOptions(data);
-    addBookmarks(data.sites);
-    setIcons(data.icons);
+  return new Promise((resolve) => {
+    chrome.storage.local.get({
+      editImage: '',
+      backgroundImage: '',
+      sites: [],
+      icons: [],
+      showBookmarkNames: 'hover',
+      bookmarkPosition: 'middle',
+      bookmarkShape: 'circle',
+      backgroundPosition: 'top'
+    }, function (data) {
+      setBackgroundImage(data.backgroundImage, data.backgroundPosition, data.backgroundSize);
+      setOptions(data);
+      addBookmarks(data.sites);
+      setIcons(data.icons);
+      resolve();
+    });
   });
 }
 
-function setBackgroundImage(imgSrc, position = $('backgroundPositionSelect').value, size = $('backgroundSizeSelect').value) {
+function onBackgroundChange(event) {
+  setBackgroundImage(event.detail);
+
+  chrome.storage.local.set({ 'backgroundImage': event.detail }, () => {
+    if (chrome.runtime.lastError) {
+      this.setUploadStatus('Failed to save image file to local storage.');
+    }
+    else {
+      showSuccessAlert();
+    }
+  });
+}
+
+function setBackgroundImage(imgSrc, position = getById('backgroundPositionSelect').value, size = getById('backgroundSizeSelect').value) {
   let windowWidth = window.innerWidth;
   let windowHeight = window.innerHeight;
   let ratio = windowHeight / (windowWidth || 1);
-  let container = $('bgPreviewContainer');
+  let container = getById('bgPreviewContainer');
   container.style.width = '350px';
   container.style.height = Math.round(350 * ratio) + 'px';
   container.style.backgroundImage = `url(${imgSrc})`;
@@ -110,10 +148,10 @@ function setBackgroundImage(imgSrc, position = $('backgroundPositionSelect').val
 }
 
 function setOptions(data) {
-  let showBookmarkNamesOptions = $('showBookmarkNamesSelect').children;
-  let bookmarkPositionOptions = $('bookmarkPositionSelect').children;
-  let backgroundPositionOptions = $('backgroundPositionSelect').children;
-  let bookmarkShapeOptions = $('bookmarkShapeSelect').children;
+  let showBookmarkNamesOptions = getById('showBookmarkNamesSelect').children;
+  let bookmarkPositionOptions = getById('bookmarkPositionSelect').children;
+  let backgroundPositionOptions = getById('backgroundPositionSelect').children;
+  let bookmarkShapeOptions = getById('bookmarkShapeSelect').children;
 
   updateSelectEl(showBookmarkNamesOptions, data.showBookmarkNames);
   updateSelectEl(bookmarkPositionOptions, data.bookmarkPosition);
@@ -133,17 +171,18 @@ function updateSelectEl(el, val) {
 }
 
 function addBookmarks(sites) {
-  let bookmarkList = $('bookmarkList');
-  let newBookmarkBtn = $('newBookmarkBtn');
+  let bookmarkList = getById('bookmarkList');
+  let newBookmarkBtn = getById('newBookmarkBtn');
+  let bookmarkShapeCls = getBookmarkShapeCls();
+
   if (sites.length) {
     let bookmarkArray = [];
     for (let site of sites) {
       let iconImg = document.createElement('img');
       iconImg.src = site.imgUrl;
-      iconImg.id = site.id;
-      iconImg.title = site.url;
+      iconImg.title = site.name;
       iconImg.name = site.name;
-      iconImg.className = 'draggableIcon';
+      iconImg.className = `bookmarkIcon draggableIcon ${bookmarkShapeCls}`;
       iconImg.addEventListener('click', function () { showEditBookmarkMenu(this) });
       bookmarkList.insertBefore(iconImg, newBookmarkBtn);
       bookmarkArray.push(iconImg);
@@ -153,7 +192,7 @@ function addBookmarks(sites) {
 }
 
 function setIcons(icons) {
-  let iconLibraryContainer = $('iconLibraryContainer');
+  let iconLibraryContainer = getById('iconLibraryContainer');
   defaultIconUrl = icons.find((icon) => icon.name === 'Default');
   defaultIconUrl = defaultIconUrl && defaultIconUrl.imgUrl || '';
 
@@ -170,26 +209,19 @@ function setIcons(icons) {
 function saveBookmark() {
   if (!currentBookmark) {
     let newBookmark = document.createElement('img');
-    newBookmark.className = 'draggableIcon';
+    newBookmark.className = `bookmarkIcon draggableIcon ${getBookmarkShapeCls()}`;
     newBookmark.addEventListener('click', function () { showEditBookmarkMenu(this); });
-    $('bookmarkList').insertBefore(newBookmark, $('newBookmarkBtn'));
-    updateIds();
+    getById('bookmarkList').insertBefore(newBookmark, getById('newBookmarkBtn'));
+    updateSortingIds();
     makeSortable(newBookmark);
     currentBookmark = newBookmark;
   }
-  currentBookmark.src = $('editIconPreview').src;
-  currentBookmark.name = $('editNameInput').value;
-  currentBookmark.title = $('editUrlInput').value;
+  currentBookmark.src = getById('editIconPreview').src;
+  currentBookmark.name = getById('editNameInput').value;
+  currentBookmark.title = getById('editUrlInput').value;
   saveBookmarks();
   hideEditBookmarkMenu();
   currentBookmark = null;
-}
-
-function updateIds() {
-  let bookmarks = $('bookmarkList').getElementsByClassName('draggableIcon');
-  for (let i = 0; i < bookmarks.length; i++) {
-    bookmarks[i].id = i;
-  }
 }
 
 function deleteBookmark() {
@@ -204,23 +236,23 @@ function deleteBookmark() {
 function showEditBookmarkMenu(element, isNewBookmark) {
   if (isNewBookmark) {
     currentBookmark = null;
-    $('editNameInput').value = '';
-    $('editUrlInput').value = '';
-    $('editIconPreview').src = defaultIconUrl;
-    showElement($('importBookmarkBtn'));
-    hideElement($('deleteBookmarkBtn'));
+    getById('editNameInput').value = '';
+    getById('editUrlInput').value = '';
+    getById('editIconPreview').src = defaultIconUrl;
+    showElement(getById('importBookmarkBtn'));
+    hideElement(getById('deleteBookmarkBtn'));
   } else {
     currentBookmark = element;
-    $('editNameInput').value = element.name;
-    $('editUrlInput').value = element.title;
-    $('editIconPreview').src = element.src;
-    hideElement($('importBookmarkBtn'));
-    showElement($('deleteBookmarkBtn'));
+    getById('editNameInput').value = element.name;
+    getById('editUrlInput').value = element.title;
+    getById('editIconPreview').src = element.src;
+    hideElement(getById('importBookmarkBtn'));
+    showElement(getById('deleteBookmarkBtn'));
   }
 
   let iconLocation = getElementLocation(element);
-  let menu = $('editBookmarkMenu');
-  let menuHeading = $('editMenuHeading');
+  let menu = getById('editBookmarkMenu');
+  let menuHeading = getById('editMenuHeading');
   menuHeading.innerText = isNewBookmark ? 'New Bookmark' : 'Edit Bookmark';
   showElement(menu);
 
@@ -249,25 +281,30 @@ function getElementLocation(el) {
   };
 }
 
+function getBookmarkShapeCls() {
+  return `icon-${getById('bookmarkShapeSelect').value}`;
+}
+
 function hideEditBookmarkMenu() {
-  hideElement($('editBookmarkMenu'));
+  hideElement(getById('editBookmarkMenu'));
 }
 
 function getBookmarkElements() {
-  return $('bookmarkList').getElementsByClassName('draggableIcon');
+  return getById('bookmarkList').getElementsByClassName('draggableIcon');
 }
 
 function setUploadStatus(message) {
-  let statusEl = $('imgUploadStatus');
+  let statusEl = getById('imgUploadStatus');
   statusEl.innerText = message;
 }
 
 function restoreDefaultImage() {
-  function onRestoreError() {
-    setUploadStatus('Restoring default image failed');
-  }
-  function onXhrGet(status, response) {
-    function onReaderLoad(result) {
+  let resp = confirm('Restore default background image?\n\nThis cannot be undone...');
+
+  if (!resp) { return; }
+
+  loadImageFromUrl('/images/bg.jpg')
+    .then(result => {
       setBackgroundImage(result);
       chrome.storage.local.set({ 'backgroundImage': result }, () => {
         if (chrome.runtime.lastError) {
@@ -278,15 +315,8 @@ function restoreDefaultImage() {
           showSuccessAlert();
         }
       });
-    }
-
-    if (status == 200) {
-      readFile(response, onReaderLoad, onRestoreError);
-    } else { onRestoreError(); }
-  }
-  let resp = confirm('Restore default background image?\n\nThis cannot be undone...');
-  if (!resp) { return; }
-  getViaXhr('/images/bg.jpg', 'blob', onXhrGet, onRestoreError);
+    })
+    .catch(() => setUploadStatus('Restoring default image failed'));
 }
 
 function saveBookmarks() {
@@ -309,29 +339,12 @@ function showSuccessAlert() {
     clearTimeout(successTimer);
   }
 
-  $('successMsg').style.opacity = 1;
+  getById('successMsg').style.opacity = 1;
 
   successTimer = setTimeout(() => {
-    $('successMsg').style.opacity = 0;
+    getById('successMsg').style.opacity = 0;
     successTimer = null;
   }, 2500);
-}
-
-function getViaXhr(url, responseType, onLoad, onError) {
-  let request = new XMLHttpRequest();
-  request.responseType = responseType;
-  request.open('GET', url, true);
-  request.addEventListener('error', onError);
-  request.addEventListener('load', function () { onLoad(request.status, request.response) });
-  request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-  request.send();
-}
-
-function readFile(file, onLoad, onError) {
-  let reader = new FileReader();
-  reader.addEventListener('error', onError);
-  reader.addEventListener('load', function () { onLoad(reader.result) });
-  reader.readAsDataURL(file);
 }
 
 document.addEventListener('DOMContentLoaded', onPageLoad);

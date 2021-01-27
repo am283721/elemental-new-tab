@@ -3,4 +3,4 @@
 tasks.txt
 workspace.code-workspace
 **/Chrome Webstore
-**/old screenshots
+node_modules

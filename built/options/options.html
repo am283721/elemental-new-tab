@@ -34,7 +34,7 @@
         </select>
       </div>
 
-      <h4>Bookmark Size</h4>
+      <h4>Bookmark Shape</h4>
       <div id="bookmarkShapeButtons">
         <select id="bookmarkShapeSelect" class="setting-select" data-setting="bookmarkShape">
           <option value="circle" selected>Circle</option>
@@ -78,7 +78,7 @@
     <div id="bookmarkSection">
       <h3>Bookmarks<span class="hint"> - Click on a bookmark to edit or delete. Drag and drop bookmarks to re-order</span></h3>
       <div id="bookmarkList">
-        <button id="newBookmarkBtn">New Bookmark</button>
+        <button id="newBookmarkBtn" class="bookmarkIcon">New Bookmark</button>
       </div>
     </div>
   </div>
@@ -235,8 +235,8 @@
           <div class="modalColumn">
             <div><b>Preview:</b></div><br>
             <div id="iconPreviewContainer">
-              <img id="modalIconPreview" />
-              <img id="modalIconBackground" />
+              <img id="modalIconPreview" class="bookmarkIcon" />
+              <img id="modalIconBackground" class="bookmarkIcon" />
             </div>
           </div>
         </div>
@@ -252,12 +252,12 @@
   </div>
 
 </body>
+<!-- <script src="utils.mjs" type="module"></script>
+<script src="dragandsort.mjs" type="module"></script>
 <script src="modal.js"></script>
 <script src="backgroundmodal.js"></script>
 <script src="bookmarkmodal.js"></script>
-<script src="iconmodal.js"></script>
+<script src="iconmodal.js"></script> -->
 <script src="optionsscript.js"></script>
-<script src="faviconscanner.js"></script>
-<script src="dragandsort.js"></script>
 
 </html>

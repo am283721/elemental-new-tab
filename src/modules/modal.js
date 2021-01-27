@@ -1,4 +1,6 @@
-class Modal {
+import { getById, showElement, hideElement } from "./utils.js";
+
+export default class Modal {
     constructor(el) {
         this.el = el;
         this.addEventListeners();
@@ -36,11 +38,11 @@ class Modal {
         let activeTabs = this.el.getElementsByClassName('activeTab');
 
         if (activeTabs.length) {
-            hideElement($('' + activeTabs[0].getAttribute('data-content')));
+            hideElement(getById('' + activeTabs[0].getAttribute('data-content')));
             activeTabs[0].classList.remove('activeTab');
         }
 
-        showElement($('' + tab.getAttribute('data-content')));
+        showElement(getById('' + tab.getAttribute('data-content')));
         tab.classList.add('activeTab');
         this.setMessage('');
     }

@@ -1,4 +1,3 @@
-"use strict";
 
 var dragSrcEl = null,
     draggingId = null;
@@ -13,14 +12,15 @@ function handleDragStart(e) {
 }
 
 function handleDragOver(e) {
-    if (e.preventDefault) { e.preventDefault(); } }
+    if (e.preventDefault) { e.preventDefault(); }
+}
 
 function handleDragEnter(e) {
-    if(dragSrcEl !== this && this.tagName !== 'button'){
+    if (dragSrcEl !== this && this.tagName !== 'button') {
         var insertOrder;
         var targetId = parseInt(this.id);
         e.dataTransfer.dropEffect = 'move';
-        if ((draggingId || dragSrcEl.id) > targetId){
+        if ((draggingId || dragSrcEl.id) > targetId) {
             insertOrder = 'beforebegin';
             draggingId = targetId - 0.5;
         } else {
@@ -32,15 +32,17 @@ function handleDragEnter(e) {
     return false;
 }
 
-function handleDragLeave(e) { return false; }
+function handleDragLeave() { return false; }
 
 function handleDrop(e) { if (e.stopPropagation) { e.stopPropagation(); } }
 
-function handleDragEnd(e) {
+function handleDragEnd() {
     dragSrcEl.classList.remove('dragging');
-    updateIds();
+    updateSortingIds();
     draggingId = null;
-    saveBookmarks();
+
+    let event = new CustomEvent("dragend");
+    document.dispatchEvent(event);
 }
 
 function addDnDHandlers(elem) {
@@ -53,10 +55,21 @@ function addDnDHandlers(elem) {
     elem.addEventListener('dragend', handleDragEnd);
 }
 
+function updateSortingIds() {
+    let bookmarks = document.getElementById('bookmarkList').getElementsByClassName('draggableIcon');
+    for (let i = 0; i < bookmarks.length; i++) {
+        bookmarks[i].id = i;
+    }
+}
+
 function makeSortable(elements) {
+    updateSortingIds();
+
     if (Array.isArray(elements)) {
         elements.forEach(addDnDHandlers);
     } else {
         addDnDHandlers(elements);
     }
 }
+
+export { makeSortable, updateSortingIds };

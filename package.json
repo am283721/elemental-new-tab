@@ -1,0 +1,30 @@
+{
+  "name": "elemental-new-tab",
+  "version": "1.0.0",
+  "description": "Overrides the default new tab page with a minimalistic design of customizable links and background image",
+  "scripts": {
+    "build-background": "rollup src/background.js --file /built/background/background.js --format iife",
+    "build-options": "rollup src/background.js --file /built/background/background.js --format iife",
+    "build-newtab": "rollup src/background.js --file /built/background/background.js --format iife",
+    "build": "rollup --config rollup.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/am283721/elemental-new-tab.git"
+  },
+  "keywords": [
+    "chrome",
+    "extension",
+    "new",
+    "tab"
+  ],
+  "author": "Andrew McGrath",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/am283721/elemental-new-tab/issues"
+  },
+  "homepage": "https://github.com/am283721/elemental-new-tab#readme",
+  "devDependencies": {
+    "rollup": "^2.38.0"
+  }
+}

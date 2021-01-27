@@ -142,18 +142,36 @@ button:disabled {
     margin-top: 30px;
 }
 
-.draggableIcon { 
+.bookmarkIcon {
     width: 70px;
     height: 70px;
-    border-radius: 35px;
+    position: relative;
+}
+
+.draggableIcon { 
     margin-right: 20px;
     cursor: move;
     float: left;
-    position: relative;
     z-index: 2;
 }
 
+.icon-circle {
+    border-radius: 35px;
+}
+
+.icon-square {
+    border-radius: 18px;
+}
+
 .draggableIcon.dragging { opacity: 0.1; }
+
+#newBookmarkBtn { 
+    border: 1px solid rgba(110, 110, 110, 0.7);
+    margin: 0;
+    cursor: pointer;
+}
+
+#newBookmarkBtn:focus { outline: none; }
 
 #editBookmarkMenu {
     background: white;
@@ -270,17 +288,6 @@ button:disabled {
     background-color: white;
 }
 
-#newBookmarkBtn { 
-    border: 1px solid rgba(110, 110, 110, 0.7);
-    width: 70px;
-    height: 70px;
-    border-radius: 35px;
-    margin: 0;
-    cursor: pointer;
-}
-
-#newBookmarkBtn:focus { outline: none; }
-
 .modal {
     display: none;
     position: fixed;
@@ -368,7 +375,7 @@ button:disabled {
     float: left;
 }
 
-.scanIcon {
+.scannedIcon {
     width: 50%;
     float: left;
     padding: 6px;
@@ -470,19 +477,19 @@ button:disabled {
 }
 
 #modalIconPreview {
-    width: 100px;
+    /* width: 100px;
     height: 100px;
-    border-radius: 50px;
-    margin-left: 25px;
+    border-radius: 50px; */
+    margin-left: 95px;
     position: absolute;
     z-index: 15;
 }
 
 #modalIconBackground {
-    width: 100px;
-    height: 100px;
+    /* width: 100px;
+    height: 100px; */
     z-index: 11;
     position: absolute;
-    margin-left: 25px;
+    margin-left: 95px;
     opacity: 0.1;
 }

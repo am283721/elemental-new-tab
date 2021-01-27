@@ -1,12 +1,14 @@
+import Modal from "./modal.js";
+import { getById } from "./utils.js";
 
-class BookmarkModal extends Modal {
+export default class BookmarkModal extends Modal {
 
     constructor(...args) {
         super(...args);
         this.selectedBookmark = null;
         this.MAX_TITLE_LENGTH = 70;
 
-        $('searchBookmarksInput').addEventListener('input', event => {
+        getById('searchBookmarksInput').addEventListener('input', event => {
             this.filterBookmarks(event.target.value.toLowerCase());
         });
     }
@@ -14,7 +16,7 @@ class BookmarkModal extends Modal {
     show() {
         super.show();
         this.loadBookmarksFromChrome();
-        $('topSitesTabBtn').click();
+        getById('topSitesTabBtn').click();
     }
 
     hide() {
@@ -24,18 +26,18 @@ class BookmarkModal extends Modal {
             this.selectedBookmark.classList.remove('selectedChromeBookmark');
             this.selectedBookmark = undefined;
         }
-        this.removeChildren($('topSitesList'));
-        this.removeChildren($('chromeBookmarks'));
-        $('searchBookmarksInput').value = '';
-        this.removeChildren($('recentBookmarksList'));
+
+        this.removeChildren(getById('topSitesList'));
+        this.removeChildren(getById('chromeBookmarks'));
+        getById('searchBookmarksInput').value = '';
+        this.removeChildren(getById('recentBookmarksList'));
         super.hide();
     }
 
     save() {
         if (this.selectedBookmark) {
-            $('editNameInput').value = this.selectedBookmark.getAttribute('data-bookmarkname');
-            $('editUrlInput').value = this.selectedBookmark.title;
-            // getDefaultTileIcon(this.selectedBookmark.title);
+            getById('editNameInput').value = this.selectedBookmark.getAttribute('data-bookmarkname');
+            getById('editUrlInput').value = this.selectedBookmark.title;
             this.hide();
         } else {
             this.setMessage('No bookmark selected');
@@ -53,16 +55,16 @@ class BookmarkModal extends Modal {
 
     loadBookmarksFromChrome() {
         chrome.bookmarks.getRecent(10, recentBookmarks => {
-            this.appendChromeBookmarks(recentBookmarks, $('recentBookmarksList'));
+            this.appendChromeBookmarks(recentBookmarks, getById('recentBookmarksList'));
         });
 
         chrome.topSites.get(topSites => {
-            this.appendChromeBookmarks(topSites, $('topSitesList'));
+            this.appendChromeBookmarks(topSites, getById('topSitesList'));
         });
 
         chrome.bookmarks.getTree(bookmarkTreeNodes => {
             if (bookmarkTreeNodes.length) {
-                $('chromeBookmarks').append(this.getTreeNodes(bookmarkTreeNodes[0].children, true));
+                getById('chromeBookmarks').append(this.getTreeNodes(bookmarkTreeNodes[0].children, true));
             }
         });
     }
@@ -95,7 +97,7 @@ class BookmarkModal extends Modal {
     }
 
     filterBookmarks(filter) {
-        let bookmarks = $('chromeBookmarks').getElementsByTagName('li');
+        let bookmarks = getById('chromeBookmarks').getElementsByTagName('li');
 
         for (let bookmark of bookmarks) {
 
