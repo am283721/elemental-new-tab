@@ -25,6 +25,6 @@
   },
   "homepage": "https://github.com/am283721/elemental-new-tab#readme",
   "devDependencies": {
-    "rollup": "^2.38.0"
+    "rollup": "^2.79.2"
   }
 }
